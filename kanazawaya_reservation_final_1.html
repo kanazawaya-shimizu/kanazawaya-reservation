@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>張替本舗金沢屋｜無料お見積り予約</title>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#fff5f7;font-family:sans-serif;}
@@ -236,6 +237,8 @@ body{background:#fff5f7;font-family:sans-serif;}
 <script>
 // ▼ GASデプロイ後にURLを書き換えてください
 const GAS_URL = 'https://script.google.com/macros/s/AKfycby5NmpoH7BohxSkVtjszq4QX_Jmfq0pNTH-RuwbgOzMiw27sBGZiGP0blSQP4ag3Adkxw/exec';
+const LIFF_ID = '2010020824-ONHr8eie';
+let lineUserId = null;
 
 const today=new Date();
 let cy=today.getFullYear(),cm=today.getMonth(),selDate=null,cur=1;
@@ -393,7 +396,8 @@ function submit(){
     services: document.getElementById('c_svc').textContent,
     memo:     document.getElementById('memo').value.trim()||'',
     date:     dateStr,
-    time:     document.querySelector('input[name="tm"]:checked').value
+    time:     document.querySelector('input[name="tm"]:checked').value,
+    lineUserId: lineUserId || ''
   };
   fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
   setTimeout(()=>{
@@ -414,6 +418,23 @@ function searchAddr(){
     }).catch(()=>alert('住所検索に失敗しました。手動でご入力ください'));
 }
 
+// LIFF初期化（LINEからのアクセス時にユーザーIDを取得）
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (liff.isLoggedIn()) {
+      const profile = await liff.getProfile();
+      lineUserId = profile.userId;
+    } else {
+      // LINEアプリ外からのアクセスはログインをスキップ
+      console.log('LINE外からのアクセス');
+    }
+  } catch(e) {
+    console.warn('LIFF初期化失敗:', e);
+  }
+}
+
+initLiff();
 renderCal();
 renderTimeGrid('');
 </script>
