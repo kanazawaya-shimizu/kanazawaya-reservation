@@ -75,18 +75,58 @@ body{background:#fff5f7;font-family:sans-serif;}
 .conf-k{color:#9a6a78;font-size:10px;min-width:75px;}
 .conf-v{color:#3d1f2a;font-weight:bold;flex:1;word-break:break-all;}
 .note{font-size:11px;color:#9a6a78;background:#fce8ed;border-left:2px solid #c9748a;padding:7px 11px;margin-bottom:12px;line-height:1.7;border-radius:0 6px 6px 0;}
-/* ★ 重複エラー表示用 */
-.conflict-msg{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:16px 14px;margin-bottom:14px;text-align:center;line-height:2;}
-.conflict-msg .conflict-icon{font-size:28px;margin-bottom:6px;}
-.conflict-msg .conflict-main{font-size:14px;font-weight:bold;color:#3d1f2a;}
-.conflict-msg .conflict-sub{font-size:12px;color:#9a6a78;}
-.conflict-msg .conflict-count{font-size:13px;color:#c9748a;font-weight:bold;margin-top:4px;}
 .btn-grp{display:flex;gap:10px;margin-top:12px;}
 .done-sec{display:none;text-align:center;padding:32px 20px;}
 .done-sec.on{display:block;}
+
+/* ★ 重複エラー：画面全体を覆うオーバーレイ */
+.conflict-overlay{
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(61,31,42,0.85);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+}
+.conflict-overlay.show{display:flex;}
+.conflict-box{
+  background:#ffffff;
+  border-radius:16px;
+  padding:32px 24px;
+  text-align:center;
+  width:320px;
+  max-width:90vw;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.conflict-icon{font-size:48px;margin-bottom:16px;}
+.conflict-main{font-size:16px;font-weight:bold;color:#3d1f2a;line-height:1.8;margin-bottom:8px;}
+.conflict-sub{font-size:13px;color:#9a6a78;margin-bottom:20px;}
+.conflict-timer{
+  width:72px;height:72px;
+  border-radius:50%;
+  background:#fce8ed;
+  border:3px solid #c9748a;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;
+  font-size:28px;font-weight:bold;color:#c9748a;
+}
+.conflict-note{font-size:12px;color:#9a6a78;}
 </style>
 </head>
 <body>
+
+<!-- ★ 重複エラー オーバーレイ -->
+<div class="conflict-overlay" id="conflictOverlay">
+  <div class="conflict-box">
+    <div class="conflict-icon">⚠️</div>
+    <div class="conflict-main">この時間帯はすでに<br>予約が入っております。</div>
+    <div class="conflict-sub">別のお時間を選択ください。</div>
+    <div class="conflict-timer" id="conflictTimer">5</div>
+    <div class="conflict-note">秒後に選択画面に戻ります。</div>
+  </div>
+</div>
+
 <div class="wrap">
   <div class="hdr">
     <div class="hdr-sub">KANAZAWA-YA</div>
@@ -197,15 +237,6 @@ body{background:#fff5f7;font-family:sans-serif;}
     <div class="sec" id="s4">
       <div class="sec-title">内容の確認</div>
       <div class="sec-desc">以下の内容でよろしければ送信してください</div>
-
-      <!-- ★ 重複エラーメッセージ -->
-      <div class="conflict-msg" id="conflictMsg">
-        <div class="conflict-icon">⚠️</div>
-        <div class="conflict-main">この時間帯はすでに予約が入っております。</div>
-        <div class="conflict-sub">別のお時間を選択ください。</div>
-        <div class="conflict-count" id="conflictCount">5秒後に選択画面に戻ります。</div>
-      </div>
-
       <div class="conf-box">
         <div class="conf-ttl">── 見積り内容 ──</div>
         <div class="conf-row"><div class="conf-k">サービス</div><div class="conf-v" id="c_svc">—</div></div>
@@ -402,7 +433,6 @@ function go(){
     const d=selDate;
     document.getElementById('c_date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
     document.getElementById('c_time').textContent=tm.value;
-    document.getElementById('conflictMsg').style.display='none';
   }
   document.getElementById('s'+cur).classList.remove('on');cur++;
   document.getElementById('s'+cur).classList.add('on');updSteps();
@@ -415,31 +445,33 @@ function back(){
   document.getElementById('s'+cur).classList.add('on');updSteps();
 }
 
-// ★ カウントダウン付き重複エラー処理
+// ★ 画面全体オーバーレイで5秒カウントダウン後にステップ3へ
 function showConflictAndGoBack(){
-  const countEl=document.getElementById('conflictCount');
-  document.getElementById('conflictMsg').style.display='block';
-  window.scrollTo(0,0);
+  const overlay  = document.getElementById('conflictOverlay');
+  const timerEl  = document.getElementById('conflictTimer');
+  let count = 5;
 
-  let count=5;
-  countEl.textContent=count+'秒後に選択画面に戻ります。';
+  timerEl.textContent = count;
+  overlay.classList.add('show');
 
-  const timer=setInterval(()=>{
+  function tick(){
     count--;
-    if(count>0){
-      countEl.textContent=count+'秒後に選択画面に戻ります。';
-    }else{
-      clearInterval(timer);
-      // ステップ3へ戻る
+    timerEl.textContent = count;
+    if(count > 0){
+      setTimeout(tick, 1000);
+    } else {
+      overlay.classList.remove('show');
       document.getElementById('s4').classList.remove('on');
-      cur=3;
+      cur = 3;
       document.getElementById('s3').classList.add('on');
       updSteps();
-      fetchBusy(cy,cm+1).then(()=>{
+      fetchBusy(cy, cm+1).then(()=>{
         if(selDate) renderTimeGrid(dateKey(selDate));
       });
     }
-  },1000);
+  }
+
+  setTimeout(tick, 1000);
 }
 
 // ★ 送信処理：重複チェック対応版
@@ -472,7 +504,6 @@ async function submit(){
     const data=await res.json();
 
     if(data.status==='conflict'){
-      // ★ 重複エラー → カウントダウン表示してステップ3へ
       btn.textContent='予約を送信する';
       btn.style.opacity='1';
       btn.disabled=false;
@@ -480,7 +511,7 @@ async function submit(){
       return;
     }
 
-    // ★ 送信成功 → 完了画面へ
+    // 送信成功 → 完了画面へ
     document.getElementById('s4').classList.remove('on');
     document.getElementById('sDone').classList.add('on');
     document.getElementById('stepBar').style.display='none';
