@@ -43,6 +43,9 @@ body{background:#fff5f7;font-family:sans-serif;}
 .fld{margin-bottom:11px;}
 .fld label{display:block;font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:5px;}
 .err-msg{font-size:10px;color:#b03060;display:none;margin-bottom:8px;}
+/* ★ サービスエリア外エラー */
+.area-err{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#3d1f2a;line-height:1.8;text-align:center;}
+.area-err .area-err-title{font-weight:bold;font-size:13px;color:#b03060;margin-bottom:4px;}
 .cal-wrap{border:1px solid #f0bfca;border-radius:8px;overflow:hidden;margin-bottom:12px;}
 .cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#3d1f2a;}
 .cal-nav{background:none;border:none;color:#e8a0b0;font-size:20px;cursor:pointer;padding:0 5px;line-height:1;}
@@ -172,6 +175,14 @@ body{background:#fff5f7;font-family:sans-serif;}
         <input type="text" id="bldg" placeholder="建物名・部屋番号（任意）" style="width:100%;padding:9px 11px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;">
       </div>
       <div class="err-msg" id="addrErr">住所を入力してください</div>
+
+      <!-- ★ サービスエリア外エラー -->
+      <div class="area-err" id="areaErr">
+        <div class="area-err-title">⚠️ 申し訳ございません</div>
+        <div>現在のサービスエリア外です。</div>
+        <div style="margin-top:6px;font-size:11px;color:#9a6a78;">対応エリア：静岡市清水区・焼津市・榛原郡吉田町</div>
+      </div>
+
       <div class="btn-grp">
         <button onclick="back()" style="flex:1;padding:14px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;">← 戻る</button>
         <button onclick="go()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#c9748a;font-size:14px;font-weight:bold;color:#ffffff;cursor:pointer;font-family:sans-serif;">次へ　→</button>
@@ -260,6 +271,9 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbySzkU9EPxO0NcSiKzLG7St
 const LIFF_ID = '2010020824-ONHr8eie';
 let lineUserId = null;
 
+// ★ サービス対応エリアのキーワード
+const SERVICE_AREAS = ['清水', '焼津', '吉田'];
+
 const today=new Date();
 let cy=today.getFullYear(),cm=today.getMonth(),selDate=null,cur=1;
 let busyData={};
@@ -307,17 +321,23 @@ function getCustomerArea(){
   return null;
 }
 
+// ★ サービスエリア内か判定
+function isInServiceArea(){
+  const addr=(document.getElementById('pref').value||'')+(document.getElementById('city').value||'');
+  return SERVICE_AREAS.some(k=>addr.includes(k));
+}
+
 // 襖が選択されているか判定
 function hasFusumaSelected(){
   return [...document.querySelectorAll('input[name="svc"]:checked')].some(e=>e.value==='襖');
 }
 
-// ★ サービス変更時にタイムグリッドを再描画
+// サービス変更時にタイムグリッドを再描画
 function onServiceChange(){
   if(selDate) renderTimeGrid(dateKey(selDate));
 }
 
-// スロットが埋まっているか判定（エリアプレフィックス対応）
+// スロットが埋まっているか判定
 function isSlotBusy(slot, busy, area){
   return busy.some(b=>{
     if(b.startsWith('shimizu:')){
@@ -332,18 +352,16 @@ function isSlotBusy(slot, busy, area){
   });
 }
 
-// ★ 時間帯グリッドを描画
-// 襖選択時：2時間分の空きをチェック（11時・16時スロットは延長なし）
+// 時間帯グリッドを描画
 function renderTimeGrid(dk){
   const busy=busyData[dk]||[];
   const area=getCustomerArea();
   const fusuma=hasFusumaSelected();
 
   document.getElementById('timeGrid').innerHTML=ALL_SLOTS.map((slot,i)=>{
-    // 通常のbusyチェック
     let isBusy=isSlotBusy(slot, busy, area);
 
-    // ★ 襖選択時：次の1時間も埋まっていれば選択不可（11時・16時は延長なし）
+    // 襖選択時：次の1時間も埋まっていれば選択不可（11時・16時は延長なし）
     if(!isBusy && fusuma && slot.start!==11 && slot.start!==16){
       const nextSlot=ALL_SLOTS.find(s=>s.start===slot.start+1);
       if(nextSlot && isSlotBusy(nextSlot, busy, area)){
@@ -416,11 +434,21 @@ function go(){
     const phone=document.getElementById('phone').value.trim();
     const pref=document.getElementById('pref').value.trim();
     const city=document.getElementById('city').value.trim();
+
     document.getElementById('furiganaErr').style.display=furigana?'none':'block'; if(!furigana)ok=false;
     document.getElementById('nameErr').style.display=name?'none':'block'; if(!name)ok=false;
     document.getElementById('phoneErr').style.display=phone?'none':'block'; if(!phone)ok=false;
     document.getElementById('addrErr').style.display=(!pref||!city)?'block':'none'; if(!pref||!city)ok=false;
+
+    // ★ サービスエリアチェック
+    if(pref && city){
+      const inArea=isInServiceArea();
+      document.getElementById('areaErr').style.display=inArea?'none':'block';
+      if(!inArea) ok=false;
+    }
+
     if(!ok)return;
+    document.getElementById('areaErr').style.display='none';
     document.getElementById('c_furigana').textContent=furigana;
     document.getElementById('c_name').textContent=name;
   }
@@ -457,15 +485,12 @@ function showConflictAndGoBack(){
   timerEl.textContent=count;
   overlay.classList.add('show');
   function tick(){
-    count--;
-    timerEl.textContent=count;
+    count--;timerEl.textContent=count;
     if(count>0){setTimeout(tick,1000);}
     else{
       overlay.classList.remove('show');
       document.getElementById('s4').classList.remove('on');
-      cur=3;
-      document.getElementById('s3').classList.add('on');
-      updSteps();
+      cur=3;document.getElementById('s3').classList.add('on');updSteps();
       fetchBusy(cy,cm+1).then(()=>{if(selDate)renderTimeGrid(dateKey(selDate));});
     }
   }
@@ -474,9 +499,7 @@ function showConflictAndGoBack(){
 
 async function submit(){
   const btn=document.getElementById('btnSub');
-  btn.textContent='確認中...';
-  btn.style.opacity='.6';
-  btn.disabled=true;
+  btn.textContent='確認中...';btn.style.opacity='.6';btn.disabled=true;
   const d=selDate;
   const dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
   const payload={
@@ -515,8 +538,15 @@ function searchAddr(){
   if(z.length!==7){alert('7桁の郵便番号を入力してください');return;}
   fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode='+z)
     .then(r=>r.json()).then(data=>{
-      if(data.results){const r=data.results[0];document.getElementById('pref').value=r.address1;document.getElementById('city').value=r.address2+r.address3;}
-      else alert('該当住所が見つかりませんでした');
+      if(data.results){
+        const r=data.results[0];
+        document.getElementById('pref').value=r.address1;
+        document.getElementById('city').value=r.address2+r.address3;
+        // ★ 住所検索後にエリアチェックを自動実行
+        const addr=r.address1+r.address2+r.address3;
+        const inArea=SERVICE_AREAS.some(k=>addr.includes(k));
+        document.getElementById('areaErr').style.display=inArea?'none':'block';
+      }else alert('該当住所が見つかりませんでした');
     }).catch(()=>alert('住所検索に失敗しました。手動でご入力ください'));
 }
 
