@@ -76,8 +76,11 @@ body{background:#fff5f7;font-family:sans-serif;}
 .conf-v{color:#3d1f2a;font-weight:bold;flex:1;word-break:break-all;}
 .note{font-size:11px;color:#9a6a78;background:#fce8ed;border-left:2px solid #c9748a;padding:7px 11px;margin-bottom:12px;line-height:1.7;border-radius:0 6px 6px 0;}
 /* ★ 重複エラー表示用 */
-.conflict-msg{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#3d1f2a;line-height:1.8;text-align:center;}
-.conflict-msg .conflict-icon{font-size:24px;margin-bottom:6px;}
+.conflict-msg{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:16px 14px;margin-bottom:14px;text-align:center;line-height:2;}
+.conflict-msg .conflict-icon{font-size:28px;margin-bottom:6px;}
+.conflict-msg .conflict-main{font-size:14px;font-weight:bold;color:#3d1f2a;}
+.conflict-msg .conflict-sub{font-size:12px;color:#9a6a78;}
+.conflict-msg .conflict-count{font-size:13px;color:#c9748a;font-weight:bold;margin-top:4px;}
 .btn-grp{display:flex;gap:10px;margin-top:12px;}
 .done-sec{display:none;text-align:center;padding:32px 20px;}
 .done-sec.on{display:block;}
@@ -198,8 +201,9 @@ body{background:#fff5f7;font-family:sans-serif;}
       <!-- ★ 重複エラーメッセージ -->
       <div class="conflict-msg" id="conflictMsg">
         <div class="conflict-icon">⚠️</div>
-        <div>この時間帯はすでに予約が入りました。</div>
-        <div style="margin-top:4px;font-size:12px;color:#9a6a78;">別の日時でご予約ください。</div>
+        <div class="conflict-main">この時間帯はすでに予約が入っております。</div>
+        <div class="conflict-sub">別のお時間を選択ください。</div>
+        <div class="conflict-count" id="conflictCount">5秒後に選択画面に戻ります。</div>
       </div>
 
       <div class="conf-box">
@@ -289,7 +293,6 @@ const ALL_SLOTS=[
   {label:'16〜17時',start:16,end:17},
 ];
 
-// 顧客エリアを住所から判定
 function getCustomerArea(){
   const addr=(document.getElementById('pref').value||'')+(document.getElementById('city').value||'');
   if(['焼津','吉田'].some(k=>addr.includes(k))) return 'yaizu';
@@ -399,7 +402,6 @@ function go(){
     const d=selDate;
     document.getElementById('c_date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
     document.getElementById('c_time').textContent=tm.value;
-    // エラーメッセージを非表示にリセット
     document.getElementById('conflictMsg').style.display='none';
   }
   document.getElementById('s'+cur).classList.remove('on');cur++;
@@ -411,6 +413,33 @@ function back(){
   if(cur<=1)return;
   document.getElementById('s'+cur).classList.remove('on');cur--;
   document.getElementById('s'+cur).classList.add('on');updSteps();
+}
+
+// ★ カウントダウン付き重複エラー処理
+function showConflictAndGoBack(){
+  const countEl=document.getElementById('conflictCount');
+  document.getElementById('conflictMsg').style.display='block';
+  window.scrollTo(0,0);
+
+  let count=5;
+  countEl.textContent=count+'秒後に選択画面に戻ります。';
+
+  const timer=setInterval(()=>{
+    count--;
+    if(count>0){
+      countEl.textContent=count+'秒後に選択画面に戻ります。';
+    }else{
+      clearInterval(timer);
+      // ステップ3へ戻る
+      document.getElementById('s4').classList.remove('on');
+      cur=3;
+      document.getElementById('s3').classList.add('on');
+      updSteps();
+      fetchBusy(cy,cm+1).then(()=>{
+        if(selDate) renderTimeGrid(dateKey(selDate));
+      });
+    }
+  },1000);
 }
 
 // ★ 送信処理：重複チェック対応版
@@ -435,29 +464,19 @@ async function submit(){
   };
 
   try{
-    const res  = await fetch(GAS_URL,{
+    const res=await fetch(GAS_URL,{
       method:'POST',
       headers:{'Content-Type':'text/plain'},
       body:JSON.stringify(payload)
     });
-    const data = await res.json();
+    const data=await res.json();
 
     if(data.status==='conflict'){
-      // ★ 重複エラー → エラーメッセージを表示してステップ3へ戻る
+      // ★ 重複エラー → カウントダウン表示してステップ3へ
       btn.textContent='予約を送信する';
       btn.style.opacity='1';
       btn.disabled=false;
-      document.getElementById('conflictMsg').style.display='block';
-
-      // ステップ3へ戻って空き状況を再取得
-      setTimeout(async()=>{
-        document.getElementById('s4').classList.remove('on');
-        cur=3;
-        document.getElementById('s3').classList.add('on');
-        updSteps();
-        await fetchBusy(cy,cm+1);
-        if(selDate) renderTimeGrid(dateKey(selDate));
-      },1500);
+      showConflictAndGoBack();
       return;
     }
 
@@ -468,7 +487,6 @@ async function submit(){
     window.scrollTo(0,0);
 
   }catch(err){
-    // ネットワークエラー等は完了扱い
     console.warn('送信エラー:',err);
     document.getElementById('s4').classList.remove('on');
     document.getElementById('sDone').classList.add('on');
