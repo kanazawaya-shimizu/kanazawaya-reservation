@@ -75,6 +75,9 @@ body{background:#fff5f7;font-family:sans-serif;}
 .conf-k{color:#9a6a78;font-size:10px;min-width:75px;}
 .conf-v{color:#3d1f2a;font-weight:bold;flex:1;word-break:break-all;}
 .note{font-size:11px;color:#9a6a78;background:#fce8ed;border-left:2px solid #c9748a;padding:7px 11px;margin-bottom:12px;line-height:1.7;border-radius:0 6px 6px 0;}
+/* ★ 重複エラー表示用 */
+.conflict-msg{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#3d1f2a;line-height:1.8;text-align:center;}
+.conflict-msg .conflict-icon{font-size:24px;margin-bottom:6px;}
 .btn-grp{display:flex;gap:10px;margin-top:12px;}
 .done-sec{display:none;text-align:center;padding:32px 20px;}
 .done-sec.on{display:block;}
@@ -191,6 +194,14 @@ body{background:#fff5f7;font-family:sans-serif;}
     <div class="sec" id="s4">
       <div class="sec-title">内容の確認</div>
       <div class="sec-desc">以下の内容でよろしければ送信してください</div>
+
+      <!-- ★ 重複エラーメッセージ -->
+      <div class="conflict-msg" id="conflictMsg">
+        <div class="conflict-icon">⚠️</div>
+        <div>この時間帯はすでに予約が入りました。</div>
+        <div style="margin-top:4px;font-size:12px;color:#9a6a78;">別の日時でご予約ください。</div>
+      </div>
+
       <div class="conf-box">
         <div class="conf-ttl">── 見積り内容 ──</div>
         <div class="conf-row"><div class="conf-k">サービス</div><div class="conf-v" id="c_svc">—</div></div>
@@ -235,7 +246,6 @@ body{background:#fff5f7;font-family:sans-serif;}
 </div>
 
 <script>
-// ▼ GASデプロイ後にURLを書き換えてください
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbySzkU9EPxO0NcSiKzLG7StbSVQfoD8wdEiP2lFZLE2ba_O4-m9Y5wXb2waSUJo7CNVaA/exec';
 const LIFF_ID = '2010020824-ONHr8eie';
 let lineUserId = null;
@@ -279,48 +289,34 @@ const ALL_SLOTS=[
   {label:'16〜17時',start:16,end:17},
 ];
 
-// ========================================
-// ▼▼▼ 修正箇所：エリア判定 + 時間帯描画 ▼▼▼
-// ========================================
-
-// ステップ2で入力した住所からエリアを判定
+// 顧客エリアを住所から判定
 function getCustomerArea(){
   const addr=(document.getElementById('pref').value||'')+(document.getElementById('city').value||'');
   if(['焼津','吉田'].some(k=>addr.includes(k))) return 'yaizu';
   if(['清水'].some(k=>addr.includes(k))) return 'shimizu';
-  return null; // エリア不明 → 安全側で両エリアのブロックを適用
+  return null;
 }
 
-// 時間帯グリッドを描画（エリアプレフィックスを考慮）
 function renderTimeGrid(dk){
   const busy=busyData[dk]||[];
-  const area=getCustomerArea(); // 'shimizu' / 'yaizu' / null
-
+  const area=getCustomerArea();
   document.getElementById('timeGrid').innerHTML=ALL_SLOTS.map((slot,i)=>{
     const isBusy=busy.some(b=>{
       if(b.startsWith('shimizu:')){
-        // 清水専用スロット → 焼津客には関係なし
         if(area==='yaizu') return false;
         return b==='shimizu:'+slot.label;
       }
       if(b.startsWith('yaizu:')){
-        // 焼津専用スロット → 清水客には関係なし
         if(area==='shimizu') return false;
         return b==='yaizu:'+slot.label;
       }
-      // プレフィックスなし → エリア問わず全員ブロック
       return b===slot.label;
     });
     return `<label class="to${isBusy?' busy':''}" id="slot${i}"><input type="radio" name="tm" value="${slot.label}"${isBusy?' disabled':''}><span class="tl">${slot.label}</span></label>`;
   }).join('');
 }
 
-// ========================================
-// ▲▲▲ 修正ここまで ▲▲▲
-// ========================================
-
 async function fetchBusy(year,month){
-  if(GAS_URL==='ここにGASのウェブアプリURLを貼り付ける')return;
   try{
     const res=await fetch(`${GAS_URL}?action=availability&year=${year}&month=${month}`);
     const data=await res.json();
@@ -403,6 +399,8 @@ function go(){
     const d=selDate;
     document.getElementById('c_date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
     document.getElementById('c_time').textContent=tm.value;
+    // エラーメッセージを非表示にリセット
+    document.getElementById('conflictMsg').style.display='none';
   }
   document.getElementById('s'+cur).classList.remove('on');cur++;
   document.getElementById('s'+cur).classList.add('on');updSteps();
@@ -415,29 +413,68 @@ function back(){
   document.getElementById('s'+cur).classList.add('on');updSteps();
 }
 
-function submit(){
+// ★ 送信処理：重複チェック対応版
+async function submit(){
   const btn=document.getElementById('btnSub');
-  btn.textContent='送信中...';btn.style.opacity='.6';btn.disabled=true;
+  btn.textContent='確認中...';
+  btn.style.opacity='.6';
+  btn.disabled=true;
+
   const d=selDate;
   const dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
   const payload={
-    furigana: document.getElementById('furigana').value,
-    name:     document.getElementById('name').value,
-    phone:    document.getElementById('phone').value,
-    address:  document.getElementById('c_addr').textContent,
-    services: document.getElementById('c_svc').textContent,
-    memo:     document.getElementById('memo').value.trim()||'',
-    date:     dateStr,
-    time:     document.querySelector('input[name="tm"]:checked').value,
-    lineUserId: lineUserId || ''
+    furigana:   document.getElementById('furigana').value,
+    name:       document.getElementById('name').value,
+    phone:      document.getElementById('phone').value,
+    address:    document.getElementById('c_addr').textContent,
+    services:   document.getElementById('c_svc').textContent,
+    memo:       document.getElementById('memo').value.trim()||'',
+    date:       dateStr,
+    time:       document.querySelector('input[name="tm"]:checked').value,
+    lineUserId: lineUserId||''
   };
-  fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)}).catch(()=>{});
-  setTimeout(()=>{
+
+  try{
+    const res  = await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if(data.status==='conflict'){
+      // ★ 重複エラー → エラーメッセージを表示してステップ3へ戻る
+      btn.textContent='予約を送信する';
+      btn.style.opacity='1';
+      btn.disabled=false;
+      document.getElementById('conflictMsg').style.display='block';
+
+      // ステップ3へ戻って空き状況を再取得
+      setTimeout(async()=>{
+        document.getElementById('s4').classList.remove('on');
+        cur=3;
+        document.getElementById('s3').classList.add('on');
+        updSteps();
+        await fetchBusy(cy,cm+1);
+        if(selDate) renderTimeGrid(dateKey(selDate));
+      },1500);
+      return;
+    }
+
+    // ★ 送信成功 → 完了画面へ
     document.getElementById('s4').classList.remove('on');
     document.getElementById('sDone').classList.add('on');
     document.getElementById('stepBar').style.display='none';
     window.scrollTo(0,0);
-  },800);
+
+  }catch(err){
+    // ネットワークエラー等は完了扱い
+    console.warn('送信エラー:',err);
+    document.getElementById('s4').classList.remove('on');
+    document.getElementById('sDone').classList.add('on');
+    document.getElementById('stepBar').style.display='none';
+    window.scrollTo(0,0);
+  }
 }
 
 function searchAddr(){
@@ -450,20 +487,16 @@ function searchAddr(){
     }).catch(()=>alert('住所検索に失敗しました。手動でご入力ください'));
 }
 
-// LIFF初期化（LINEからのアクセス時にユーザーIDを取得）
-async function initLiff() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    if (liff.isLoggedIn()) {
-      const profile = await liff.getProfile();
-      lineUserId = profile.userId;
-    } else {
-      // LINEアプリ外からのアクセスはログインをスキップ
+async function initLiff(){
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(liff.isLoggedIn()){
+      const profile=await liff.getProfile();
+      lineUserId=profile.userId;
+    }else{
       console.log('LINE外からのアクセス');
     }
-  } catch(e) {
-    console.warn('LIFF初期化失敗:', e);
-  }
+  }catch(e){console.warn('LIFF初期化失敗:',e);}
 }
 
 initLiff();
