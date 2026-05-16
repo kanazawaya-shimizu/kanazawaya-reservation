@@ -43,7 +43,6 @@ body{background:#fff5f7;font-family:sans-serif;}
 .fld{margin-bottom:11px;}
 .fld label{display:block;font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:5px;}
 .err-msg{font-size:10px;color:#b03060;display:none;margin-bottom:8px;}
-/* ★ サービスエリア外エラー */
 .area-err{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#3d1f2a;line-height:1.8;text-align:center;}
 .area-err .area-err-title{font-weight:bold;font-size:13px;color:#b03060;margin-bottom:4px;}
 .cal-wrap{border:1px solid #f0bfca;border-radius:8px;overflow:hidden;margin-bottom:12px;}
@@ -61,7 +60,7 @@ body{background:#fff5f7;font-family:sans-serif;}
 .cal-d.sel{background:#c9748a;color:#ffffff!important;font-weight:bold;}
 .cal-d.tod{font-weight:bold;text-decoration:underline;text-underline-offset:2px;}
 .sel-disp{padding:8px 13px;font-size:11px;color:#a05570;background:rgba(201,116,138,.08);border-top:1px solid #f0bfca;text-align:center;min-height:32px;}
-.cal-legend{display:flex;gap:12px;padding:6px 13px 8px;font-size:9px;color:#9a6a78;background:rgba(201,116,138,.04);border-top:1px solid #f0bfca;}
+.cal-legend{display:flex;gap:12px;padding:6px 13px 8px;font-size:9px;color:#9a6a78;background:rgba(201,116,134,.04);border-top:1px solid #f0bfca;}
 .legend-item{display:flex;align-items:center;gap:4px;}
 .legend-dot{width:8px;height:8px;border-radius:50%;}
 .time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
@@ -81,7 +80,6 @@ body{background:#fff5f7;font-family:sans-serif;}
 .btn-grp{display:flex;gap:10px;margin-top:12px;}
 .done-sec{display:none;text-align:center;padding:32px 20px;}
 .done-sec.on{display:block;}
-/* ★ 重複エラー オーバーレイ */
 .conflict-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(61,31,42,0.85);z-index:9999;align-items:center;justify-content:center;}
 .conflict-overlay.show{display:flex;}
 .conflict-box{background:#ffffff;border-radius:16px;padding:32px 24px;text-align:center;width:320px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
@@ -94,7 +92,6 @@ body{background:#fff5f7;font-family:sans-serif;}
 </head>
 <body>
 
-<!-- ★ 重複エラー オーバーレイ -->
 <div class="conflict-overlay" id="conflictOverlay">
   <div class="conflict-box">
     <div class="conflict-icon">⚠️</div>
@@ -175,14 +172,11 @@ body{background:#fff5f7;font-family:sans-serif;}
         <input type="text" id="bldg" placeholder="建物名・部屋番号（任意）" style="width:100%;padding:9px 11px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;">
       </div>
       <div class="err-msg" id="addrErr">住所を入力してください</div>
-
-      <!-- ★ サービスエリア外エラー -->
       <div class="area-err" id="areaErr">
         <div class="area-err-title">⚠️ 申し訳ございません</div>
         <div>現在のサービスエリア外です。</div>
         <div style="margin-top:6px;font-size:11px;color:#9a6a78;">対応エリア：静岡市清水区・焼津市・榛原郡吉田町</div>
       </div>
-
       <div class="btn-grp">
         <button onclick="back()" style="flex:1;padding:14px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;">← 戻る</button>
         <button onclick="go()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#c9748a;font-size:14px;font-weight:bold;color:#ffffff;cursor:pointer;font-family:sans-serif;">次へ　→</button>
@@ -251,13 +245,17 @@ body{background:#fff5f7;font-family:sans-serif;}
       <div style="font-size:50px;margin-bottom:16px">🌸</div>
       <div style="font-size:18px;font-weight:bold;color:#3d1f2a;margin-bottom:16px;letter-spacing:.06em;">ご予約ありがとうございます</div>
       <div style="font-size:13px;color:#3d1f2a;line-height:2;margin-bottom:20px;">お見積り予約を受け付けました。</div>
-      <div style="background:#ffffff;border:1px solid #f0bfca;border-radius:10px;padding:16px 18px;text-align:left;margin-bottom:20px;">
+      <div style="background:#ffffff;border:1px solid #f0bfca;border-radius:10px;padding:16px 18px;text-align:left;margin-bottom:16px;">
         <div style="font-size:12px;color:#3d1f2a;line-height:2;">
           ご質問や内容の変更などがございましたら、公式LINEのメッセージよりお気軽にご相談ください。<br><br>
           また、日程の確認や臨時休業・訪問時間の変更など、こちらからご連絡させていただく場合もございますので、メッセージの確認をお願いいたします。
         </div>
       </div>
-      <div style="font-size:11px;color:#9a6a78;margin-bottom:24px;line-height:1.8;">お急ぎの場合はお電話にて<br>お問い合わせください。</div>
+      <!-- ★ 電話番号 -->
+      <div style="background:#fce8ed;border:1px solid #f0bfca;border-radius:10px;padding:14px 18px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:12px;color:#9a6a78;margin-bottom:6px;">お電話でのお問い合わせはこちら</div>
+        <a href="tel:0120932031" style="font-size:22px;font-weight:bold;color:#3d1f2a;text-decoration:none;letter-spacing:.1em;">📞 0120-932-031</a>
+      </div>
       <div style="display:inline-block;padding:10px 26px;border:1px solid #c9748a;border-radius:40px;">
         <div style="font-size:11px;color:#a05570;letter-spacing:.12em;">張替本舗 金沢屋</div>
         <div style="font-size:10px;color:#9a6a78;margin-top:4px;letter-spacing:.08em;">清水長崎・焼津店</div>
@@ -271,7 +269,6 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbySzkU9EPxO0NcSiKzLG7St
 const LIFF_ID = '2010020824-ONHr8eie';
 let lineUserId = null;
 
-// ★ サービス対応エリアのキーワード
 const SERVICE_AREAS = ['清水', '焼津', '吉田'];
 
 const today=new Date();
@@ -313,7 +310,6 @@ const ALL_SLOTS=[
   {label:'16〜17時',start:16,end:17},
 ];
 
-// 顧客エリアを住所から判定
 function getCustomerArea(){
   const addr=(document.getElementById('pref').value||'')+(document.getElementById('city').value||'');
   if(['焼津','吉田'].some(k=>addr.includes(k))) return 'yaizu';
@@ -321,23 +317,19 @@ function getCustomerArea(){
   return null;
 }
 
-// ★ サービスエリア内か判定
 function isInServiceArea(){
   const addr=(document.getElementById('pref').value||'')+(document.getElementById('city').value||'');
   return SERVICE_AREAS.some(k=>addr.includes(k));
 }
 
-// 襖が選択されているか判定
 function hasFusumaSelected(){
   return [...document.querySelectorAll('input[name="svc"]:checked')].some(e=>e.value==='襖');
 }
 
-// サービス変更時にタイムグリッドを再描画
 function onServiceChange(){
   if(selDate) renderTimeGrid(dateKey(selDate));
 }
 
-// スロットが埋まっているか判定
 function isSlotBusy(slot, busy, area){
   return busy.some(b=>{
     if(b.startsWith('shimizu:')){
@@ -352,7 +344,6 @@ function isSlotBusy(slot, busy, area){
   });
 }
 
-// 時間帯グリッドを描画
 function renderTimeGrid(dk){
   const busy=busyData[dk]||[];
   const area=getCustomerArea();
@@ -360,15 +351,10 @@ function renderTimeGrid(dk){
 
   document.getElementById('timeGrid').innerHTML=ALL_SLOTS.map((slot,i)=>{
     let isBusy=isSlotBusy(slot, busy, area);
-
-    // 襖選択時：次の1時間も埋まっていれば選択不可（11時・16時は延長なし）
     if(!isBusy && fusuma && slot.start!==11 && slot.start!==16){
       const nextSlot=ALL_SLOTS.find(s=>s.start===slot.start+1);
-      if(nextSlot && isSlotBusy(nextSlot, busy, area)){
-        isBusy=true;
-      }
+      if(nextSlot && isSlotBusy(nextSlot, busy, area)) isBusy=true;
     }
-
     return `<label class="to${isBusy?' busy':''}" id="slot${i}"><input type="radio" name="tm" value="${slot.label}"${isBusy?' disabled':''}><span class="tl">${slot.label}</span></label>`;
   }).join('');
 }
@@ -434,19 +420,15 @@ function go(){
     const phone=document.getElementById('phone').value.trim();
     const pref=document.getElementById('pref').value.trim();
     const city=document.getElementById('city').value.trim();
-
     document.getElementById('furiganaErr').style.display=furigana?'none':'block'; if(!furigana)ok=false;
     document.getElementById('nameErr').style.display=name?'none':'block'; if(!name)ok=false;
     document.getElementById('phoneErr').style.display=phone?'none':'block'; if(!phone)ok=false;
     document.getElementById('addrErr').style.display=(!pref||!city)?'block':'none'; if(!pref||!city)ok=false;
-
-    // ★ サービスエリアチェック
     if(pref && city){
       const inArea=isInServiceArea();
       document.getElementById('areaErr').style.display=inArea?'none':'block';
       if(!inArea) ok=false;
     }
-
     if(!ok)return;
     document.getElementById('areaErr').style.display='none';
     document.getElementById('c_furigana').textContent=furigana;
@@ -542,7 +524,6 @@ function searchAddr(){
         const r=data.results[0];
         document.getElementById('pref').value=r.address1;
         document.getElementById('city').value=r.address2+r.address3;
-        // ★ 住所検索後にエリアチェックを自動実行
         const addr=r.address1+r.address2+r.address3;
         const inArea=SERVICE_AREAS.some(k=>addr.includes(k));
         document.getElementById('areaErr').style.display=inArea?'none':'block';
