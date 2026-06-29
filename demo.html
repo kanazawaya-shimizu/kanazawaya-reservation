@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>張替本舗金沢屋｜無料お見積り予約（サンプル）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fff5f7;font-family:sans-serif;}
+.wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#fff5f7;display:flex;flex-direction:column;}
+.hdr{padding:18px 20px 14px;text-align:center;position:relative;background:#3d1f2a;}
+.hdr::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#a05570,#e8a0b0,#a05570);}
+.hdr-sub{font-size:10px;color:#e8a0b0;letter-spacing:.3em;margin-bottom:3px;}
+.hdr-main{font-size:18px;font-weight:bold;color:#ffffff;letter-spacing:.1em;}
+.hdr-main span{color:#e8a0b0;}
+.hdr-shop{font-size:15px;color:#e8a0b0;margin-top:4px;letter-spacing:.1em;}
+.hdr-tag{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;}
+.gold-bar{display:flex;align-items:center;gap:8px;padding:9px 20px;background:rgba(201,116,138,.1);border-bottom:1px solid #f0bfca;}
+.gold-bar::before,.gold-bar::after{content:'';flex:1;height:1px;}
+.gold-bar::before{background:linear-gradient(90deg,transparent,#c9748a);}
+.gold-bar::after{background:linear-gradient(90deg,#c9748a,transparent);}
+.gold-bar span{font-size:11px;color:#a05570;letter-spacing:.2em;white-space:nowrap;}
+.steps{display:flex;padding:10px 20px;border-bottom:1px solid #f0bfca;background:#fff5f7;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:11px;right:-50%;width:100%;height:1px;background:#f0bfca;z-index:0;}
+.step-n{width:22px;height:22px;border-radius:50%;border:1.5px solid #f0bfca;display:flex;align-items:center;justify-content:center;font-size:10px;position:relative;z-index:1;background:#fff5f7;color:#9a6a78;}
+.step-l{font-size:9px;color:#9a6a78;}
+.scroll-area{flex:1;background:#fff5f7;}
+.sec{display:none;padding:16px 16px 24px;}
+.sec.on{display:block;}
+.sec-title{font-size:14px;font-weight:bold;color:#3d1f2a;margin-bottom:3px;display:flex;align-items:center;gap:7px;}
+.sec-title::before{content:'';width:3px;height:16px;background:#c9748a;border-radius:2px;}
+.sec-desc{font-size:11px;color:#9a6a78;margin-bottom:13px;padding-left:10px;}
+.eg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ec{position:relative;cursor:pointer;}
+.ec input[type=checkbox]{position:absolute;opacity:0;width:0;height:0;}
+.ec-in{border:1.5px solid #f0bfca;border-radius:8px;padding:12px 11px;display:flex;align-items:center;justify-content:space-between;background:#ffffff;}
+.ec input[type=checkbox]:checked+.ec-in{border-color:#c9748a;background:rgba(201,116,138,.08);}
+.ec-name{font-size:14px;font-weight:bold;color:#3d1f2a;}
+.ec-chk{width:18px;height:18px;border:1.5px solid #f0bfca;border-radius:4px;flex-shrink:0;background:#ffffff;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;}
+.ec input[type=checkbox]:checked+.ec-in .ec-chk{background:#c9748a;border-color:#c9748a;color:#ffffff;}
+.fld{margin-bottom:11px;}
+.fld label{display:block;font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:5px;}
+.err-msg{font-size:10px;color:#b03060;display:none;margin-bottom:8px;}
+.area-err{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#3d1f2a;line-height:1.8;text-align:center;}
+.area-err .area-err-title{font-weight:bold;font-size:13px;color:#b03060;margin-bottom:4px;}
+.cal-wrap{border:1px solid #f0bfca;border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#3d1f2a;}
+.cal-nav{background:none;border:none;color:#e8a0b0;font-size:20px;cursor:pointer;padding:0 5px;line-height:1;}
+.cal-month{font-size:13px;color:#ffffff;font-weight:bold;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-dh{text-align:center;font-size:10px;padding:6px 0;color:#9a6a78;border-bottom:1px solid #f0bfca;background:#fce8ed;}
+.cal-dh.su{color:#b03060;}.cal-dh.sa{color:#5b7fc4;}
+.cal-d{text-align:center;padding:8px 0;font-size:11px;cursor:pointer;border-right:1px solid rgba(240,191,202,.4);border-bottom:1px solid rgba(240,191,202,.4);color:#3d1f2a;background:#ffffff;}
+.cal-d:nth-child(7n){border-right:none;}
+.cal-d.emp{cursor:default;background:#ffffff;}
+.cal-d.closed{color:#d4b8c0!important;cursor:not-allowed!important;background:#fafafa!important;text-decoration:line-through;}
+.cal-d.sat{color:#5b7fc4;}
+.cal-d.sel{background:#c9748a;color:#ffffff!important;font-weight:bold;}
+.cal-d.tod{font-weight:bold;text-decoration:underline;text-underline-offset:2px;}
+.sel-disp{padding:8px 13px;font-size:11px;color:#a05570;background:rgba(201,116,138,.08);border-top:1px solid #f0bfca;text-align:center;min-height:32px;}
+.cal-legend{display:flex;gap:12px;padding:6px 13px 8px;font-size:9px;color:#9a6a78;background:rgba(201,116,134,.04);border-top:1px solid #f0bfca;}
+.legend-item{display:flex;align-items:center;gap:4px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;}
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.to{position:relative;}
+.to input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
+.tl{display:block;text-align:center;padding:9px 2px;border:1.5px solid #f0bfca;border-radius:8px;font-size:11px;color:#3d1f2a;background:#ffffff;cursor:pointer;line-height:1.4;font-weight:bold;}
+.to input[type=radio]:checked+.tl{background:#c9748a;border-color:#c9748a;color:#ffffff;}
+.to.busy .tl{background:#f0f0f0;color:#bbbbbb;cursor:not-allowed;border-color:#e0e0e0;}
+.to.busy input[type=radio]{pointer-events:none;}
+.conf-box{background:#ffffff;border:1px solid #f0bfca;border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.conf-ttl{font-size:11px;padding:8px 13px;background:#3d1f2a;color:#e8a0b0;letter-spacing:.1em;}
+.conf-row{display:flex;padding:9px 13px;border-bottom:1px solid rgba(240,191,202,.4);font-size:12px;}
+.conf-row:last-child{border-bottom:none;}
+.conf-k{color:#9a6a78;font-size:10px;min-width:75px;}
+.conf-v{color:#3d1f2a;font-weight:bold;flex:1;word-break:break-all;}
+.note{font-size:11px;color:#9a6a78;background:#fce8ed;border-left:2px solid #c9748a;padding:7px 11px;margin-bottom:12px;line-height:1.7;border-radius:0 6px 6px 0;}
+.btn-grp{display:flex;gap:10px;margin-top:12px;}
+.done-sec{display:none;text-align:center;padding:32px 20px;}
+.done-sec.on{display:block;}
+.conflict-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(61,31,42,0.85);z-index:9999;align-items:center;justify-content:center;}
+.conflict-overlay.show{display:flex;}
+.conflict-box{background:#ffffff;border-radius:16px;padding:32px 24px;text-align:center;width:320px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.conflict-icon{font-size:48px;margin-bottom:16px;}
+.conflict-main{font-size:16px;font-weight:bold;color:#3d1f2a;line-height:1.8;margin-bottom:8px;}
+.conflict-sub{font-size:13px;color:#9a6a78;margin-bottom:20px;}
+.conflict-timer{width:72px;height:72px;border-radius:50%;background:#fce8ed;border:3px solid #c9748a;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:bold;color:#c9748a;}
+.conflict-note{font-size:12px;color:#9a6a78;}
+</style>
+</head>
+<body>
+
+<div class="conflict-overlay" id="conflictOverlay">
+  <div class="conflict-box">
+    <div class="conflict-icon">⚠️</div>
+    <div class="conflict-main">この時間帯はすでに<br>予約が入っております。</div>
+    <div class="conflict-sub">別のお時間を選択ください。</div>
+    <div class="conflict-timer" id="conflictTimer">5</div>
+    <div class="conflict-note">秒後に選択画面に戻ります。</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div style="background:#3d1f2a;color:#e8a0b0;text-align:center;font-size:11px;padding:7px 12px;letter-spacing:.05em;border-bottom:1px solid #c9748a;">🌸 これはサンプル（デモ）画面です ｜ 実際の予約は送信されません</div>
+  <div class="hdr">
+    <div class="hdr-sub">KANAZAWA-YA</div>
+    <div class="hdr-main">張替本舗<span>金沢屋</span></div>
+    <div class="hdr-shop">清水長崎・焼津店</div>
+    <div class="hdr-tag">障子・ふすま・網戸・畳の張替え専門店</div>
+  </div>
+  <div class="gold-bar"><span>無料お見積り予約</span></div>
+
+  <div class="steps" id="stepBar">
+    <div class="step"><div class="step-n" id="sn1" style="background:#c9748a;border-color:#c9748a;color:#fff;">1</div><div class="step-l" style="color:#a05570;font-weight:bold;">見積内容</div></div>
+    <div class="step"><div class="step-n" id="sn2">2</div><div class="step-l">お客様情報</div></div>
+    <div class="step"><div class="step-n" id="sn3">3</div><div class="step-l">日時選択</div></div>
+    <div class="step"><div class="step-n" id="sn4">4</div><div class="step-l">確認</div></div>
+  </div>
+
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- STEP1 -->
+    <div class="sec on" id="s1">
+      <div class="sec-title">見積り内容を選択</div>
+      <div class="sec-desc">ご希望の見積り内容をお選びください（複数選択可）</div>
+      <div class="eg">
+        <label class="ec"><input type="checkbox" name="svc" value="襖" onchange="onServiceChange()"><div class="ec-in"><div class="ec-name">襖</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec"><input type="checkbox" name="svc" value="障子" onchange="onServiceChange()"><div class="ec-in"><div class="ec-name">障子</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec"><input type="checkbox" name="svc" value="網戸" onchange="onServiceChange()"><div class="ec-in"><div class="ec-name">網戸</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec"><input type="checkbox" name="svc" value="畳" onchange="onServiceChange()"><div class="ec-in"><div class="ec-name">畳</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec" style="grid-column:span 2"><input type="checkbox" name="svc" value="その他" onchange="onServiceChange()"><div class="ec-in"><div class="ec-name">その他</div><div class="ec-chk">✓</div></div></label>
+      </div>
+      <div class="err-msg" id="svcErr">見積り内容を1つ以上選択してください</div>
+      <div class="fld">
+        <label>その他、リフォーム、ご要望・気になる点など <span style="font-size:10px;color:#9a6a78">（任意）</span></label>
+        <textarea id="memo" placeholder="例）襖６、破れがひどい、キッチン、部屋のクロスも見てほしい。など" style="width:100%;padding:10px 12px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;height:80px;resize:none;line-height:1.6;font-family:sans-serif;display:block;"></textarea>
+      </div>
+      <div class="btn-grp">
+        <button disabled style="flex:1;padding:14px;border:1.5px solid #cccccc;border-radius:8px;background:#ffffff;font-size:13px;color:#cccccc;cursor:default;font-family:sans-serif;">← 戻る</button>
+        <button onclick="go()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#c9748a;font-size:14px;font-weight:bold;color:#ffffff;cursor:pointer;font-family:sans-serif;">次へ　→</button>
+      </div>
+    </div>
+
+    <!-- STEP2 -->
+    <div class="sec" id="s2">
+      <div class="sec-title">お客様情報の入力</div>
+      <div class="sec-desc">訪問先情報をご記入ください</div>
+      <div class="fld">
+        <label>ふりがな <span style="color:#b03060;margin-left:3px;font-size:10px;">必須</span></label>
+        <input type="text" id="furigana" placeholder="例）かなざわ　たろう" style="width:100%;padding:10px 12px;border:1px solid #f0bfca;border-radius:8px;font-size:14px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;">
+        <div class="err-msg" id="furiganaErr">ふりがなを入力してください</div>
+      </div>
+      <div class="fld">
+        <label>お名前 <span style="color:#b03060;margin-left:3px;font-size:10px;">必須</span></label>
+        <input type="text" id="name" placeholder="例）金沢　太郎" style="width:100%;padding:10px 12px;border:1px solid #f0bfca;border-radius:8px;font-size:14px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;">
+        <div class="err-msg" id="nameErr">お名前を入力してください</div>
+      </div>
+      <div class="fld">
+        <label>電話番号 <span style="color:#b03060;margin-left:3px;font-size:10px;">必須</span></label>
+        <input type="tel" id="phone" placeholder="例）090-1234-5678" style="width:100%;padding:10px 12px;border:1px solid #f0bfca;border-radius:8px;font-size:14px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;">
+        <div class="err-msg" id="phoneErr">電話番号を入力してください</div>
+      </div>
+      <div style="background:#ffffff;border:1px solid #f0bfca;border-radius:8px;padding:11px;margin-bottom:4px;">
+        <div style="font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:8px;">訪問先住所 <span style="color:#b03060;font-size:10px;">必須</span></div>
+        <div style="display:flex;gap:7px;margin-bottom:7px;">
+          <input type="tel" id="postal" placeholder="郵便番号（例：420-0001）" maxlength="8" style="flex:1;padding:9px 11px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;">
+          <button onclick="searchAddr()" style="padding:9px 11px;background:#a05570;color:#ffffff;border:none;border-radius:8px;font-size:11px;cursor:pointer;white-space:nowrap;font-weight:bold;font-family:sans-serif;">住所検索</button>
+        </div>
+        <input type="text" id="pref" placeholder="都道府県" style="width:100%;padding:9px 11px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;margin-bottom:7px;">
+        <input type="text" id="city" placeholder="市区町村・番地" style="width:100%;padding:9px 11px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;margin-bottom:7px;">
+        <input type="text" id="bldg" placeholder="建物名・部屋番号（任意）" style="width:100%;padding:9px 11px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;">
+      </div>
+      <div class="err-msg" id="addrErr">住所を入力してください</div>
+      <div class="area-err" id="areaErr">
+        <div class="area-err-title">⚠️ 申し訳ございません</div>
+        <div>現在のサービスエリア外です。</div>
+        <div style="margin-top:6px;font-size:11px;color:#9a6a78;">対応エリア：静岡市清水区・焼津市・榛原郡吉田町</div>
+        <div style="margin-top:10px;font-size:13px;color:#3d1f2a;">お電話にてお問い合わせください。</div>
+        <a href="tel:0120932031" style="display:inline-block;margin-top:6px;font-size:20px;font-weight:bold;color:#3d1f2a;text-decoration:none;letter-spacing:.08em;">📞 0120-932-031</a>
+      </div>
+      <div class="btn-grp">
+        <button onclick="back()" style="flex:1;padding:14px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;">← 戻る</button>
+        <button onclick="go()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#c9748a;font-size:14px;font-weight:bold;color:#ffffff;cursor:pointer;font-family:sans-serif;">次へ　→</button>
+      </div>
+    </div>
+
+    <!-- STEP3 -->
+    <div class="sec" id="s3">
+      <div class="sec-title">訪問希望日時</div>
+      <div class="sec-desc">ご都合のよい日程をお選びください</div>
+      <div class="note">グレーの日付・時間帯は予約不可です。</div>
+      <div class="cal-wrap">
+        <div class="cal-hdr">
+          <button class="cal-nav" onclick="prevM()">‹</button>
+          <div class="cal-month" id="calTitle"></div>
+          <button class="cal-nav" onclick="nextM()">›</button>
+        </div>
+        <div class="cal-grid" id="calDH"></div>
+        <div class="cal-grid" id="calG"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#c9748a;"></div>選択中</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d4b8c0;"></div>予約不可</div>
+        </div>
+        <div class="sel-disp" id="selDisp">日付を選択してください</div>
+      </div>
+      <div class="fld">
+        <label>見積り希望時間帯 <span style="color:#b03060;margin-left:3px;font-size:10px;">必須</span></label>
+        <div class="time-grid" id="timeGrid"></div>
+        <div class="err-msg" id="timeErr">時間帯を選択してください</div>
+      </div>
+      <div class="btn-grp">
+        <button onclick="back()" style="flex:1;padding:14px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;">← 戻る</button>
+        <button onclick="go()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#c9748a;font-size:14px;font-weight:bold;color:#ffffff;cursor:pointer;font-family:sans-serif;">確認へ　→</button>
+      </div>
+    </div>
+
+    <!-- STEP4 -->
+    <div class="sec" id="s4">
+      <div class="sec-title">内容の確認</div>
+      <div class="sec-desc">以下の内容でよろしければ送信してください</div>
+      <div class="conf-box">
+        <div class="conf-ttl">── 見積り内容 ──</div>
+        <div class="conf-row"><div class="conf-k">サービス</div><div class="conf-v" id="c_svc">—</div></div>
+        <div class="conf-row"><div class="conf-k">ご要望</div><div class="conf-v" id="c_memo">—</div></div>
+      </div>
+      <div class="conf-box">
+        <div class="conf-ttl">── お客様情報 ──</div>
+        <div class="conf-row"><div class="conf-k">ふりがな</div><div class="conf-v" id="c_furigana">—</div></div>
+        <div class="conf-row"><div class="conf-k">お名前</div><div class="conf-v" id="c_name">—</div></div>
+        <div class="conf-row"><div class="conf-k">電話番号</div><div class="conf-v" id="c_phone">—</div></div>
+        <div class="conf-row"><div class="conf-k">住所</div><div class="conf-v" id="c_addr">—</div></div>
+      </div>
+      <div class="conf-box">
+        <div class="conf-ttl">── 訪問希望日時 ──</div>
+        <div class="conf-row"><div class="conf-k">希望日</div><div class="conf-v" id="c_date">—</div></div>
+        <div class="conf-row"><div class="conf-k">時間帯</div><div class="conf-v" id="c_time">—</div></div>
+      </div>
+      <div class="btn-grp">
+        <button onclick="back()" style="flex:1;padding:14px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;">← 戻る</button>
+        <button id="btnSub" onclick="submit()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#3d1f2a;font-size:14px;font-weight:bold;color:#e8a0b0;cursor:pointer;font-family:sans-serif;">予約を送信する</button>
+      </div>
+    </div>
+
+    <!-- 完了 -->
+    <div class="done-sec" id="sDone">
+      <div style="font-size:50px;margin-bottom:16px">🌸</div>
+      <div style="font-size:18px;font-weight:bold;color:#3d1f2a;margin-bottom:16px;letter-spacing:.06em;">ご予約ありがとうございます</div>
+      <div style="font-size:13px;color:#3d1f2a;line-height:2;margin-bottom:20px;">お見積り予約を受け付けました。</div>
+      <div style="background:#ffffff;border:1px solid #f0bfca;border-radius:10px;padding:16px 18px;text-align:left;margin-bottom:16px;">
+        <div style="font-size:12px;color:#3d1f2a;line-height:2;">
+          ご質問や内容の変更などがございましたら、公式LINEのメッセージよりお気軽にご相談ください。<br><br>
+          また、日程の確認や臨時休業・訪問時間の変更など、こちらからご連絡させていただく場合もございますので、メッセージの確認をお願いいたします。
+        </div>
+      </div>
+      <!-- ★ 電話番号 -->
+      <div style="background:#fce8ed;border:1px solid #f0bfca;border-radius:10px;padding:14px 18px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:12px;color:#9a6a78;margin-bottom:6px;">お電話でのお問い合わせはこちら</div>
+        <a href="tel:0120932031" style="font-size:22px;font-weight:bold;color:#3d1f2a;text-decoration:none;letter-spacing:.1em;">📞 0120-932-031</a>
+      </div>
+      <div style="display:inline-block;padding:10px 26px;border:1px solid #c9748a;border-radius:40px;">
+        <div style="font-size:11px;color:#a05570;letter-spacing:.12em;">張替本舗 金沢屋</div>
+        <div style="font-size:10px;color:#9a6a78;margin-top:4px;letter-spacing:.08em;">清水長崎・焼津店</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = ''; // デモ版：バックエンド（GAS）には接続していません
+const LIFF_ID = ''; // デモ版：LINE連携（LIFF）は無効化しています
+let lineUserId = null;
+
+const SERVICE_AREAS = ['清水', '焼津', '吉田'];
+
+const today=new Date();
+let cy=today.getFullYear(),cm=today.getMonth(),selDate=null,cur=1;
+let busyData={};
+const DN=['日','月','火','水','木','金','土'];
+
+const HOLIDAYS=new Set([
+  '2026-01-01','2026-01-12','2026-02-11','2026-02-23',
+  '2026-03-20','2026-04-29','2026-05-03','2026-05-04',
+  '2026-05-05','2026-05-06','2026-07-20','2026-08-11',
+  '2026-09-21','2026-09-22','2026-09-23','2026-10-12',
+  '2026-11-03','2026-11-23','2026-12-23',
+  '2027-01-01','2027-01-11','2027-02-11','2027-02-23',
+  '2027-03-21','2027-04-29','2027-05-03','2027-05-04',
+  '2027-05-05','2027-07-19','2027-08-11','2027-09-20',
+  '2027-09-23','2027-10-11','2027-11-03','2027-11-23',
+]);
+
+function dateKey(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
+
+function isClosed(dt){
+  const todayStart=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const tomorrowStart=new Date(todayStart);tomorrowStart.setDate(tomorrowStart.getDate()+1);
+  const dtStart=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate());
+  if(dtStart<=tomorrowStart)return true;
+  if(dt.getDay()===0)return true;
+  if(HOLIDAYS.has(dateKey(dt)))return true;
+  return false;
+}
+
+const ALL_SLOTS=[
+  {label:'9〜10時',start:9,end:10},
+  {label:'10〜11時',start:10,end:11},
+  {label:'11〜12時',start:11,end:12},
+  {label:'13〜14時',start:13,end:14},
+  {label:'14〜15時',start:14,end:15},
+  {label:'15〜16時',start:15,end:16},
+  {label:'16〜17時',start:16,end:17},
+];
+
+function getCustomerArea(){
+  const addr=(document.getElementById('pref').value||'')+(document.getElementById('city').value||'');
+  if(['焼津','吉田'].some(k=>addr.includes(k))) return 'yaizu';
+  if(['清水'].some(k=>addr.includes(k))) return 'shimizu';
+  return null;
+}
+
+function isInServiceArea(){
+  // デモ版：エリア制限を解除し、どの住所でも予約できるようにしています。
+  return true;
+}
+
+function hasFusumaSelected(){
+  return [...document.querySelectorAll('input[name="svc"]:checked')].some(e=>e.value==='襖');
+}
+
+function onServiceChange(){
+  if(selDate) renderTimeGrid(dateKey(selDate));
+}
+
+function isSlotBusy(slot, busy, area){
+  return busy.some(b=>{
+    if(b.startsWith('shimizu:')){
+      if(area==='yaizu') return false;
+      return b==='shimizu:'+slot.label;
+    }
+    if(b.startsWith('yaizu:')){
+      if(area==='shimizu') return false;
+      return b==='yaizu:'+slot.label;
+    }
+    return b===slot.label;
+  });
+}
+
+function renderTimeGrid(dk){
+  const busy=busyData[dk]||[];
+  const area=getCustomerArea();
+  const fusuma=hasFusumaSelected();
+
+  document.getElementById('timeGrid').innerHTML=ALL_SLOTS.map((slot,i)=>{
+    let isBusy=isSlotBusy(slot, busy, area);
+    if(!isBusy && fusuma && slot.start!==11 && slot.start!==16){
+      const nextSlot=ALL_SLOTS.find(s=>s.start===slot.start+1);
+      if(nextSlot && isSlotBusy(nextSlot, busy, area)) isBusy=true;
+    }
+    return `<label class="to${isBusy?' busy':''}" id="slot${i}"><input type="radio" name="tm" value="${slot.label}"${isBusy?' disabled':''}><span class="tl">${slot.label}</span></label>`;
+  }).join('');
+}
+
+async function fetchBusy(year,month){
+  // デモ版：空き状況サーバー（GAS）には接続しません。すべて空き枠として表示します。
+  return;
+}
+
+function renderCal(){
+  document.getElementById('calTitle').textContent=cy+'年 '+(cm+1)+'月';
+  document.getElementById('calDH').innerHTML=DN.map((d,i)=>`<div class="cal-dh${i===0?' su':i===6?' sa':''}">${d}</div>`).join('');
+  const fd=new Date(cy,cm,1).getDay(),dim=new Date(cy,cm+1,0).getDate();
+  let h='';
+  for(let i=0;i<fd;i++)h+='<div class="cal-d emp"></div>';
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(cy,cm,d);
+    const isSa=dt.getDay()===6;
+    const isSel=selDate&&dt.toDateString()===selDate.toDateString();
+    const isT=dt.toDateString()===today.toDateString();
+    const closed=isClosed(dt);
+    let c='cal-d';
+    if(closed)c+=' closed'; else if(isSa)c+=' sat';
+    if(isT)c+=' tod'; if(isSel)c+=' sel';
+    const fn=closed?'':`onclick="pick(${cy},${cm},${d})"`;
+    h+=`<div class="${c}" ${fn}>${d}</div>`;
+  }
+  document.getElementById('calG').innerHTML=h;
+}
+
+function pick(y,m,d){
+  const dt=new Date(y,m,d);if(isClosed(dt))return;
+  selDate=dt;
+  document.getElementById('selDisp').textContent='選択中：'+y+'年'+(m+1)+'月'+d+'日（'+DN[dt.getDay()]+'）';
+  renderCal();renderTimeGrid(dateKey(dt));
+}
+async function prevM(){cm--;if(cm<0){cm=11;cy--;}await fetchBusy(cy,cm+1);renderCal();}
+async function nextM(){cm++;if(cm>11){cm=0;cy++;}await fetchBusy(cy,cm+1);renderCal();}
+
+function updSteps(){
+  for(let i=1;i<=4;i++){
+    const n=document.getElementById('sn'+i);
+    if(i<cur){n.style.background='#3d1f2a';n.style.borderColor='#3d1f2a';n.style.color='#ffffff';}
+    else if(i===cur){n.style.background='#c9748a';n.style.borderColor='#c9748a';n.style.color='#ffffff';}
+    else{n.style.background='#fff5f7';n.style.borderColor='#f0bfca';n.style.color='#9a6a78';}
+  }
+  window.scrollTo(0,0);
+}
+
+function go(){
+  if(cur===1){
+    const chk=document.querySelectorAll('input[name="svc"]:checked');
+    if(!chk.length){document.getElementById('svcErr').style.display='block';return;}
+    document.getElementById('svcErr').style.display='none';
+  }
+  if(cur===2){
+    let ok=true;
+    const furigana=document.getElementById('furigana').value.trim();
+    const name=document.getElementById('name').value.trim();
+    const phone=document.getElementById('phone').value.trim();
+    const pref=document.getElementById('pref').value.trim();
+    const city=document.getElementById('city').value.trim();
+    document.getElementById('furiganaErr').style.display=furigana?'none':'block'; if(!furigana)ok=false;
+    document.getElementById('nameErr').style.display=name?'none':'block'; if(!name)ok=false;
+    document.getElementById('phoneErr').style.display=phone?'none':'block'; if(!phone)ok=false;
+    document.getElementById('addrErr').style.display=(!pref||!city)?'block':'none'; if(!pref||!city)ok=false;
+    if(pref && city){
+      const inArea=isInServiceArea();
+      document.getElementById('areaErr').style.display=inArea?'none':'block';
+      if(!inArea) ok=false;
+    }
+    if(!ok)return;
+    document.getElementById('areaErr').style.display='none';
+    document.getElementById('c_furigana').textContent=furigana;
+    document.getElementById('c_name').textContent=name;
+  }
+  if(cur===3){
+    if(!selDate){alert('訪問希望日を選択してください');return;}
+    const tm=document.querySelector('input[name="tm"]:checked');
+    if(!tm){document.getElementById('timeErr').style.display='block';return;}
+    document.getElementById('timeErr').style.display='none';
+    const svcs=[...document.querySelectorAll('input[name="svc"]:checked')].map(e=>e.value).join('、');
+    const pref=document.getElementById('pref').value,city=document.getElementById('city').value,bldg=document.getElementById('bldg').value;
+    document.getElementById('c_svc').textContent=svcs;
+    document.getElementById('c_memo').textContent=document.getElementById('memo').value.trim()||'—';
+    document.getElementById('c_phone').textContent=document.getElementById('phone').value;
+    document.getElementById('c_addr').textContent=pref+city+(bldg?' '+bldg:'');
+    const d=selDate;
+    document.getElementById('c_date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
+    document.getElementById('c_time').textContent=tm.value;
+  }
+  document.getElementById('s'+cur).classList.remove('on');cur++;
+  document.getElementById('s'+cur).classList.add('on');updSteps();
+  if(cur===3)fetchBusy(cy,cm+1).then(()=>renderTimeGrid(''));
+}
+
+function back(){
+  if(cur<=1)return;
+  document.getElementById('s'+cur).classList.remove('on');cur--;
+  document.getElementById('s'+cur).classList.add('on');updSteps();
+}
+
+function showConflictAndGoBack(){
+  const overlay=document.getElementById('conflictOverlay');
+  const timerEl=document.getElementById('conflictTimer');
+  let count=5;
+  timerEl.textContent=count;
+  overlay.classList.add('show');
+  function tick(){
+    count--;timerEl.textContent=count;
+    if(count>0){setTimeout(tick,1000);}
+    else{
+      overlay.classList.remove('show');
+      document.getElementById('s4').classList.remove('on');
+      cur=3;document.getElementById('s3').classList.add('on');updSteps();
+      fetchBusy(cy,cm+1).then(()=>{if(selDate)renderTimeGrid(dateKey(selDate));});
+    }
+  }
+  setTimeout(tick,1000);
+}
+
+async function submit(){
+  // デモ版：データの送信は行いません。完了画面のみ表示します。
+  document.getElementById('s4').classList.remove('on');
+  document.getElementById('sDone').classList.add('on');
+  document.getElementById('stepBar').style.display='none';
+  window.scrollTo(0,0);
+}
+
+function searchAddr(){
+  const z=document.getElementById('postal').value.replace('-','');
+  if(z.length!==7){alert('7桁の郵便番号を入力してください');return;}
+  fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode='+z)
+    .then(r=>r.json()).then(data=>{
+      if(data.results){
+        const r=data.results[0];
+        document.getElementById('pref').value=r.address1;
+        document.getElementById('city').value=r.address2+r.address3;
+        const addr=r.address1+r.address2+r.address3;
+        // デモ版：エリア制限を解除しているため、エリア外エラーは表示しません。
+        document.getElementById('areaErr').style.display='none';
+      }else alert('該当住所が見つかりませんでした');
+    }).catch(()=>alert('住所検索に失敗しました。手動でご入力ください'));
+}
+
+async function initLiff(){
+  // デモ版：LINE連携（LIFF）は無効化しています。
+  return;
+}
+
+initLiff();
+renderCal();
+renderTimeGrid('');
+</script>
+</body>
+</html>
