@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>張替本舗金沢屋 瀬戸、浄水、インター店｜無料お見積り予約</title>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fff5f7;font-family:sans-serif;}
+.wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#fff5f7;display:flex;flex-direction:column;}
+.hdr{padding:18px 20px 14px;text-align:center;position:relative;background:#3d1f2a;}
+.hdr::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#a05570,#e8a0b0,#a05570);}
+.hdr-sub{font-size:10px;color:#e8a0b0;letter-spacing:.3em;margin-bottom:3px;}
+.hdr-main{font-size:18px;font-weight:bold;color:#ffffff;letter-spacing:.1em;}
+.hdr-main span{color:#e8a0b0;}
+.hdr-shop{font-size:15px;color:#e8a0b0;margin-top:4px;letter-spacing:.1em;}
+.hdr-tag{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;}
+.gold-bar{display:flex;align-items:center;gap:8px;padding:9px 20px;background:rgba(201,116,138,.1);border-bottom:1px solid #f0bfca;}
+.gold-bar::before,.gold-bar::after{content:'';flex:1;height:1px;}
+.gold-bar::before{background:linear-gradient(90deg,transparent,#c9748a);}
+.gold-bar::after{background:linear-gradient(90deg,#c9748a,transparent);}
+.gold-bar span{font-size:11px;color:#a05570;letter-spacing:.2em;white-space:nowrap;}
+.steps{display:flex;padding:10px 20px;border-bottom:1px solid #f0bfca;background:#fff5f7;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:11px;right:-50%;width:100%;height:1px;background:#f0bfca;z-index:0;}
+.step-n{width:22px;height:22px;border-radius:50%;border:1.5px solid #f0bfca;display:flex;align-items:center;justify-content:center;font-size:10px;position:relative;z-index:1;background:#fff5f7;color:#9a6a78;}
+.step-l{font-size:9px;color:#9a6a78;}
+.scroll-area{flex:1;background:#fff5f7;}
+.sec{display:none;padding:16px 16px 24px;}
+.sec.on{display:block;}
+.sec-title{font-size:14px;font-weight:bold;color:#3d1f2a;margin-bottom:3px;display:flex;align-items:center;gap:7px;}
+.sec-title::before{content:'';width:3px;height:16px;background:#c9748a;border-radius:2px;}
+.sec-desc{font-size:11px;color:#9a6a78;margin-bottom:13px;padding-left:10px;line-height:1.7;}
+.sub-title{font-size:13px;font-weight:bold;color:#3d1f2a;margin:20px 0 10px;padding-top:16px;border-top:1px dashed #f0bfca;display:flex;align-items:center;gap:7px;}
+.sub-title::before{content:'';width:3px;height:14px;background:#c9748a;border-radius:2px;}
+.eg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ec{position:relative;cursor:pointer;}
+.ec input[type=checkbox]{position:absolute;opacity:0;width:0;height:0;}
+.ec-in{border:1.5px solid #f0bfca;border-radius:8px;padding:12px 11px;display:flex;align-items:center;justify-content:space-between;background:#ffffff;}
+.ec input[type=checkbox]:checked+.ec-in{border-color:#c9748a;background:rgba(201,116,138,.08);}
+.ec-name{font-size:14px;font-weight:bold;color:#3d1f2a;}
+.ec-chk{width:18px;height:18px;border:1.5px solid #f0bfca;border-radius:4px;flex-shrink:0;background:#ffffff;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;}
+.ec input[type=checkbox]:checked+.ec-in .ec-chk{background:#c9748a;border-color:#c9748a;color:#ffffff;}
+.fld{margin-bottom:11px;}
+.fld label{display:block;font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:5px;}
+.inp{width:100%;padding:10px 12px;border:1px solid #f0bfca;border-radius:8px;font-size:14px;color:#3d1f2a;background:#ffffff;outline:none;-webkit-appearance:none;display:block;font-family:sans-serif;}
+.req{color:#b03060;margin-left:3px;font-size:10px;}
+.err-msg{font-size:10px;color:#b03060;display:none;margin-top:4px;margin-bottom:8px;}
+.area-err{display:none;background:#fff0f0;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#3d1f2a;line-height:1.8;text-align:center;}
+.area-err .area-err-title{font-weight:bold;font-size:13px;color:#b03060;margin-bottom:4px;}
+.area-ok{display:none;background:#ffffff;border:1.5px solid #c9748a;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#3d1f2a;line-height:1.8;}
+.area-ok b{color:#a05570;}
+.cal-wrap{border:1px solid #f0bfca;border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#3d1f2a;}
+.cal-nav{background:none;border:none;color:#e8a0b0;font-size:20px;cursor:pointer;padding:0 5px;line-height:1;}
+.cal-month{font-size:13px;color:#ffffff;font-weight:bold;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-dh{text-align:center;font-size:10px;padding:6px 0;color:#9a6a78;border-bottom:1px solid #f0bfca;background:#fce8ed;}
+.cal-dh.su{color:#b03060;}.cal-dh.sa{color:#5b7fc4;}
+.cal-d{text-align:center;padding:8px 0;font-size:11px;cursor:pointer;border-right:1px solid rgba(240,191,202,.4);border-bottom:1px solid rgba(240,191,202,.4);color:#3d1f2a;background:#ffffff;}
+.cal-d:nth-child(7n){border-right:none;}
+.cal-d.emp{cursor:default;background:#ffffff;}
+.cal-d.closed{color:#d4b8c0!important;cursor:not-allowed!important;background:#fafafa!important;text-decoration:line-through;}
+.cal-d.sat{color:#5b7fc4;}
+.cal-d.sel{background:#c9748a;color:#ffffff!important;font-weight:bold;}
+.cal-d.tod{font-weight:bold;text-decoration:underline;text-underline-offset:2px;}
+.sel-disp{padding:8px 13px;font-size:11px;color:#a05570;background:rgba(201,116,138,.08);border-top:1px solid #f0bfca;text-align:center;min-height:32px;}
+.cal-legend{display:flex;gap:12px;padding:6px 13px 8px;font-size:9px;color:#9a6a78;background:rgba(201,116,134,.04);border-top:1px solid #f0bfca;}
+.legend-item{display:flex;align-items:center;gap:4px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;}
+.time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.to{position:relative;}
+.to input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
+.tl{display:block;text-align:center;padding:10px 2px;border:1.5px solid #f0bfca;border-radius:8px;font-size:12px;color:#3d1f2a;background:#ffffff;cursor:pointer;line-height:1.4;font-weight:bold;}
+.to input[type=radio]:checked+.tl{background:#c9748a;border-color:#c9748a;color:#ffffff;}
+.to.busy .tl{background:#f0f0f0;color:#bbbbbb;cursor:not-allowed;border-color:#e0e0e0;}
+.to.busy input[type=radio]{pointer-events:none;}
+.time-hint{font-size:11px;color:#9a6a78;padding:10px;text-align:center;background:#ffffff;border:1px dashed #f0bfca;border-radius:8px;}
+.conf-box{background:#ffffff;border:1px solid #f0bfca;border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.conf-ttl{font-size:11px;padding:8px 13px;background:#3d1f2a;color:#e8a0b0;letter-spacing:.1em;}
+.conf-row{display:flex;padding:9px 13px;border-bottom:1px solid rgba(240,191,202,.4);font-size:12px;}
+.conf-row:last-child{border-bottom:none;}
+.conf-k{color:#9a6a78;font-size:10px;min-width:75px;}
+.conf-v{color:#3d1f2a;font-weight:bold;flex:1;word-break:break-all;}
+.note{font-size:11px;color:#9a6a78;background:#fce8ed;border-left:2px solid #c9748a;padding:7px 11px;margin-bottom:12px;line-height:1.7;border-radius:0 6px 6px 0;}
+.btn-grp{display:flex;gap:10px;margin-top:12px;}
+.btn-back{flex:1;padding:14px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;}
+.btn-next{flex:2;padding:14px;border:none;border-radius:8px;background:#c9748a;font-size:14px;font-weight:bold;color:#ffffff;cursor:pointer;font-family:sans-serif;}
+.popup-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(61,31,42,0.85);z-index:9999;align-items:center;justify-content:center;}
+.popup-overlay.show{display:flex;}
+.popup-box{background:#ffffff;border-radius:16px;padding:28px 22px 22px;text-align:center;width:330px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.popup-icon{font-size:44px;margin-bottom:10px;}
+.popup-main{font-size:15px;font-weight:bold;color:#3d1f2a;line-height:1.8;margin-bottom:8px;}
+.popup-addr{font-size:12px;color:#9a6a78;margin-bottom:14px;line-height:1.7;}
+.popup-tel{display:block;background:#c9748a;color:#ffffff;text-decoration:none;font-size:18px;font-weight:bold;letter-spacing:.06em;padding:9px;border-radius:10px;margin-bottom:8px;}
+.popup-tel-name{display:block;font-size:11px;font-weight:normal;letter-spacing:.05em;opacity:.9;}
+.popup-sub{font-size:11px;color:#9a6a78;margin-bottom:14px;}
+.popup-close{width:100%;padding:11px;border:1.5px solid #9a6a78;border-radius:8px;background:#ffffff;font-size:13px;color:#9a6a78;cursor:pointer;font-family:sans-serif;}
+.conflict-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(61,31,42,0.85);z-index:9999;align-items:center;justify-content:center;}
+.conflict-overlay.show{display:flex;}
+.conflict-box{background:#ffffff;border-radius:16px;padding:32px 24px;text-align:center;width:320px;max-width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.conflict-icon{font-size:48px;margin-bottom:16px;}
+.conflict-main{font-size:16px;font-weight:bold;color:#3d1f2a;line-height:1.8;margin-bottom:8px;}
+.conflict-sub{font-size:13px;color:#9a6a78;margin-bottom:20px;}
+.conflict-timer{width:72px;height:72px;border-radius:50%;background:#fce8ed;border:3px solid #c9748a;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:bold;color:#c9748a;}
+.conflict-note{font-size:12px;color:#9a6a78;}
+.done-sec{display:none;text-align:center;padding:32px 20px;}
+.done-sec.on{display:block;}
+</style>
+</head>
+<body>
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <div class="popup-icon">📞</div>
+    <div class="popup-main">こちらの住所は<br>お電話での対応になります。</div>
+    <div class="popup-addr">ご入力の住所：<span id="popAddr"></span><br>予約フォームからのご予約は、愛知県・岐阜県のお客様のみです。</div>
+    <a class="popup-tel" href="tel:0561766604"><span class="popup-tel-name">瀬戸店</span>📞 0561-76-6604</a>
+    <a class="popup-tel" href="tel:0565458100"><span class="popup-tel-name">豊田・浄水店</span>📞 0565-45-8100</a>
+    <a class="popup-tel" href="tel:0565777225"><span class="popup-tel-name">豊田・インター店</span>📞 0565-77-7225</a>
+    <div class="popup-sub">こちらからお電話ください。</div>
+    <button class="popup-close" onclick="closePopup()">閉じる</button>
+  </div>
+</div>
+
+<div class="conflict-overlay" id="conflictOverlay">
+  <div class="conflict-box">
+    <div class="conflict-icon">⚠️</div>
+    <div class="conflict-main">この時間帯はすでに<br>予約が入っております。</div>
+    <div class="conflict-sub">別のお時間を選択ください。</div>
+    <div class="conflict-timer" id="conflictTimer">5</div>
+    <div class="conflict-note">秒後に選択画面に戻ります。</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-sub">KANAZAWA-YA</div>
+    <div class="hdr-main">張替本舗<span>金沢屋</span></div>
+    <div class="hdr-shop">瀬戸、浄水、インター店</div>
+    <div class="hdr-tag">障子・ふすま・網戸・畳の張替え専門店</div>
+  </div>
+  <div class="gold-bar"><span>無料お見積り予約</span></div>
+
+  <div class="steps" id="stepBar">
+    <div class="step"><div class="step-n" id="sn1" style="background:#c9748a;border-color:#c9748a;color:#fff;">1</div><div class="step-l" style="color:#a05570;font-weight:bold;">地域確認</div></div>
+    <div class="step"><div class="step-n" id="sn2">2</div><div class="step-l">日時選択</div></div>
+    <div class="step"><div class="step-n" id="sn3">3</div><div class="step-l">内容・情報</div></div>
+    <div class="step"><div class="step-n" id="sn4">4</div><div class="step-l">確認</div></div>
+  </div>
+
+  <div class="scroll-area">
+
+    <!-- STEP1：郵便番号・地域確認 -->
+    <div class="sec on" id="s1">
+      <div class="sec-title">郵便番号の入力</div>
+      <div class="sec-desc">地域によって予約可能な日時が異なりますので、最初に訪問先の郵便番号をご入力ください。</div>
+      <div style="display:flex;gap:7px;margin-bottom:10px;">
+        <input type="tel" id="postal" class="inp" placeholder="郵便番号（例：489-0000）" maxlength="8" oninput="resetArea()" style="flex:1;">
+        <button onclick="searchPostal()" style="padding:9px 14px;background:#a05570;color:#ffffff;border:none;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap;font-weight:bold;font-family:sans-serif;">地域を確認</button>
+      </div>
+      <div class="err-msg" id="postalErr"></div>
+      <div class="area-ok" id="areaOk"></div>
+      <div class="btn-grp" id="btnToDate" style="display:none;">
+        <button onclick="go()" class="btn-next">日時選択へ　→</button>
+      </div>
+    </div>
+
+    <!-- STEP2：日時選択 -->
+    <div class="sec" id="s2">
+      <div class="sec-title">訪問希望日時</div>
+      <div class="sec-desc">ご都合のよい日程をお選びください</div>
+      <div class="note">グレーの日付・時間帯は予約不可です。</div>
+      <div class="err-msg" id="busyErr">予約状況を取得できませんでした。お手数ですが、もう一度お試しいただくか、お電話ください。</div>
+      <div class="cal-wrap">
+        <div class="cal-hdr">
+          <button class="cal-nav" onclick="prevM()">‹</button>
+          <div class="cal-month" id="calTitle"></div>
+          <button class="cal-nav" onclick="nextM()">›</button>
+        </div>
+        <div class="cal-grid" id="calDH"></div>
+        <div class="cal-grid" id="calG"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#c9748a;"></div>選択中</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d4b8c0;"></div>予約不可</div>
+        </div>
+        <div class="sel-disp" id="selDisp">日付を選択してください</div>
+      </div>
+      <div class="fld">
+        <label>見積り希望時間帯 <span class="req">必須</span></label>
+        <div class="time-grid" id="timeGrid"></div>
+        <div class="err-msg" id="timeErr">時間帯を選択してください</div>
+      </div>
+      <div class="btn-grp">
+        <button onclick="back()" class="btn-back">← 戻る</button>
+        <button onclick="go()" class="btn-next">次へ　→</button>
+      </div>
+    </div>
+
+    <!-- STEP3：見積り内容＋備考＋個人情報 -->
+    <div class="sec" id="s3">
+      <div class="sec-title">見積り内容を選択</div>
+      <div class="sec-desc">ご希望の見積り内容をお選びください（複数選択可）</div>
+      <div class="eg">
+        <label class="ec"><input type="checkbox" name="svc" value="襖"><div class="ec-in"><div class="ec-name">襖</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec"><input type="checkbox" name="svc" value="障子"><div class="ec-in"><div class="ec-name">障子</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec"><input type="checkbox" name="svc" value="網戸"><div class="ec-in"><div class="ec-name">網戸</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec"><input type="checkbox" name="svc" value="畳"><div class="ec-in"><div class="ec-name">畳</div><div class="ec-chk">✓</div></div></label>
+        <label class="ec" style="grid-column:span 2"><input type="checkbox" name="svc" value="その他リフォーム・修繕"><div class="ec-in"><div class="ec-name">その他リフォーム・修繕</div><div class="ec-chk">✓</div></div></label>
+      </div>
+      <div class="err-msg" id="svcErr">見積り内容を1つ以上選択してください</div>
+      <div class="fld">
+        <label>その他、リフォーム、ご要望・気になる点など <span style="font-size:10px;color:#9a6a78">（任意）</span></label>
+        <textarea id="memo" placeholder="例）襖６、破れがひどい、キッチン、部屋のクロスも見てほしい。など" style="width:100%;padding:10px 12px;border:1px solid #f0bfca;border-radius:8px;font-size:13px;color:#3d1f2a;background:#ffffff;outline:none;height:80px;resize:none;line-height:1.6;font-family:sans-serif;display:block;"></textarea>
+      </div>
+
+      <div class="sub-title">お客様情報の入力</div>
+      <div class="fld">
+        <label>お名前 <span class="req">必須</span></label>
+        <input type="text" id="name" class="inp" placeholder="例）金沢　太郎">
+        <div class="err-msg" id="nameErr">お名前を入力してください</div>
+      </div>
+      <div class="fld">
+        <label>ふりがな <span class="req">必須</span></label>
+        <input type="text" id="furigana" class="inp" placeholder="例）かなざわ　たろう">
+        <div class="err-msg" id="furiganaErr">ふりがなを入力してください</div>
+      </div>
+      <div class="fld">
+        <label>電話番号 <span class="req">必須</span></label>
+        <input type="tel" id="phone" class="inp" placeholder="例）090-1234-5678">
+        <div class="err-msg" id="phoneErr">電話番号を入力してください</div>
+      </div>
+      <div style="background:#ffffff;border:1px solid #f0bfca;border-radius:8px;padding:11px;margin-bottom:4px;">
+        <div style="font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:8px;">訪問先住所 <span class="req">必須</span></div>
+        <div style="font-size:11px;color:#9a6a78;margin-bottom:8px;" id="postalShow"></div>
+        <input type="text" id="pref" class="inp" placeholder="都道府県" style="margin-bottom:7px;font-size:13px;">
+        <input type="text" id="city" class="inp" placeholder="市区町村・町名" style="margin-bottom:7px;font-size:13px;">
+        <div style="font-size:12px;font-weight:bold;color:#3d1f2a;margin:10px 0 5px;">番地 <span class="req">必須</span></div>
+        <input type="text" id="banchi" class="inp" placeholder="例）1-2-3　（町名のあとの番地）" style="font-size:13px;">
+        <div class="err-msg" id="banchiErr">番地を入力してください（例：1-2-3）</div>
+        <input type="text" id="bldg" class="inp" placeholder="建物名・部屋番号（任意）" style="margin-top:7px;font-size:13px;">
+      </div>
+      <div class="err-msg" id="addrErr">住所を入力してください</div>
+      <div class="btn-grp">
+        <button onclick="back()" class="btn-back">← 戻る</button>
+        <button onclick="go()" class="btn-next">内容確認へ　→</button>
+      </div>
+    </div>
+
+    <!-- STEP4：確認 -->
+    <div class="sec" id="s4">
+      <div class="sec-title">内容の確認</div>
+      <div class="sec-desc">以下の内容でよろしければ送信してください</div>
+      <div class="conf-box">
+        <div class="conf-ttl">── 訪問希望日時 ──</div>
+        <div class="conf-row"><div class="conf-k">希望日</div><div class="conf-v" id="c_date">—</div></div>
+        <div class="conf-row"><div class="conf-k">時間帯</div><div class="conf-v" id="c_time">—</div></div>
+      </div>
+      <div class="conf-box">
+        <div class="conf-ttl">── 見積り内容 ──</div>
+        <div class="conf-row"><div class="conf-k">サービス</div><div class="conf-v" id="c_svc">—</div></div>
+        <div class="conf-row"><div class="conf-k">ご要望</div><div class="conf-v" id="c_memo">—</div></div>
+      </div>
+      <div class="conf-box">
+        <div class="conf-ttl">── お客様情報 ──</div>
+        <div class="conf-row"><div class="conf-k">お名前</div><div class="conf-v" id="c_name">—</div></div>
+        <div class="conf-row"><div class="conf-k">ふりがな</div><div class="conf-v" id="c_furigana">—</div></div>
+        <div class="conf-row"><div class="conf-k">電話番号</div><div class="conf-v" id="c_phone">—</div></div>
+        <div class="conf-row"><div class="conf-k">住所</div><div class="conf-v" id="c_addr">—</div></div>
+      </div>
+      <div class="note" id="lineNote" style="display:none;">※ LINEのトーク画面から開いていないため、予約完了のLINEメッセージは届きません。LINEから予約すると、確認メッセージが届きます。</div>
+      <div class="area-err" id="submitErr" style="display:none;">
+        <div class="area-err-title">⚠️ 送信できませんでした</div>
+        <div>通信状況をご確認のうえ、もう一度お試しください。<br>改善しない場合は、お電話にてご連絡ください。</div>
+        <div style="margin-top:8px;font-size:12px;line-height:2;">
+          <a href="tel:0561766604" style="color:#3d1f2a;font-weight:bold;text-decoration:none;">瀬戸店 📞 0561-76-6604</a><br>
+          <a href="tel:0565458100" style="color:#3d1f2a;font-weight:bold;text-decoration:none;">豊田・浄水店 📞 0565-45-8100</a><br>
+          <a href="tel:0565777225" style="color:#3d1f2a;font-weight:bold;text-decoration:none;">豊田・インター店 📞 0565-77-7225</a>
+        </div>
+      </div>
+      <div class="btn-grp">
+        <button onclick="back()" class="btn-back">← 戻る</button>
+        <button id="btnSub" onclick="submitBooking()" style="flex:2;padding:14px;border:none;border-radius:8px;background:#3d1f2a;font-size:14px;font-weight:bold;color:#e8a0b0;cursor:pointer;font-family:sans-serif;">予約を送信する</button>
+      </div>
+    </div>
+
+    <!-- 完了 -->
+    <div class="done-sec" id="sDone">
+      <div style="font-size:50px;margin-bottom:16px">🌸</div>
+      <div style="font-size:18px;font-weight:bold;color:#3d1f2a;margin-bottom:16px;letter-spacing:.06em;">ご予約ありがとうございます</div>
+      <div style="font-size:13px;color:#3d1f2a;line-height:2;margin-bottom:20px;">お見積り予約を受け付けました。</div>
+      <div style="background:#ffffff;border:1px solid #f0bfca;border-radius:10px;padding:16px 18px;text-align:left;margin-bottom:16px;">
+        <div style="font-size:12px;color:#3d1f2a;line-height:2;">
+          ご質問や内容の変更などがございましたら、公式LINEのメッセージよりお気軽にご相談ください。<br><br>
+          また、日程の確認や臨時休業・訪問時間の変更など、こちらからご連絡させていただく場合もございますので、メッセージの確認をお願いいたします。
+        </div>
+      </div>
+      <div style="background:#fce8ed;border:1px solid #f0bfca;border-radius:10px;padding:14px 18px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:12px;color:#9a6a78;margin-bottom:6px;">お電話でのお問い合わせはこちら</div>
+        <div style="font-size:12px;color:#3d1f2a;line-height:2.2;">
+          <a href="tel:0561766604" style="color:#3d1f2a;text-decoration:none;font-weight:bold;">瀬戸店　　　　　📞 0561-76-6604</a><br>
+          <a href="tel:0565458100" style="color:#3d1f2a;text-decoration:none;font-weight:bold;">豊田・浄水店　　📞 0565-45-8100</a><br>
+          <a href="tel:0565777225" style="color:#3d1f2a;text-decoration:none;font-weight:bold;">豊田・インター店📞 0565-77-7225</a>
+        </div>
+      </div>
+      <div style="display:inline-block;padding:10px 26px;border:1px solid #c9748a;border-radius:40px;">
+        <div style="font-size:11px;color:#a05570;letter-spacing:.12em;">張替本舗 金沢屋</div>
+        <div style="font-size:10px;color:#9a6a78;margin-top:4px;letter-spacing:.08em;">瀬戸、浄水、インター店</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ▼▼▼ ここだけ書き換えてください ▼▼▼
+const GAS_URL = 'ここにGASのウェブアプリURLを貼る';   // GASを公開（デプロイ）したときのURL
+const LIFF_ID = 'ここにLIFF-IDを入れる';                // LINE Developers の LIFF ID
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+let lineUserId = null;
+let busyData = {};
+
+/* ===== 設定（ここを書き換えると予約できる地域・曜日・時間が変わります） =====
+   keys  : 住所にこの文字が含まれていたら、予約できる地域と判定（愛知県・岐阜県）
+   days  : 予約できる曜日（0=日,1=月,2=火,3=水,4=木,5=金,6=土）
+   start/end : 予約できる時間（start時〜end時）
+   ※ 曜日・時間は仮の値です */
+const AREAS=[
+  {id:'all',name:'愛知県・岐阜県',keys:['愛知県','岐阜県'],fallback:true,days:[1,2,3,4,5,6],start:9,end:19}
+];
+function findArea(full,zip){
+  const cand=AREAS.filter(a=>a.keys.some(k=>full.includes(k)));
+  return cand.find(a=>a.fallback)||null;
+}
+function areaKeyList(){return AREAS[0].keys;}
+
+const DN=['日','月','火','水','木','金','土'];
+const HOLIDAYS=new Set([
+  '2026-11-23','2026-12-23','2027-01-01','2027-01-11','2027-02-11','2027-02-23',
+  '2027-03-21','2027-04-29','2027-05-03','2027-05-04','2027-05-05'
+]);
+
+const today=new Date();
+let cy=today.getFullYear(),cm=today.getMonth(),selDate=null,cur=1;
+let area=null,addrPref='',addrCity='',postalVal='';
+
+function toHalf(s){return s.replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[ー－―−\s]/g,'-');}
+function dateKey(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');}
+
+/* ---- STEP1：郵便番号 ---- */
+function resetArea(){
+  area=null;
+  document.getElementById('areaOk').style.display='none';
+  document.getElementById('btnToDate').style.display='none';
+  document.getElementById('postalErr').style.display='none';
+}
+function openPopup(full){
+  document.getElementById('popAddr').textContent=full;
+  document.getElementById('popup').classList.add('show');
+}
+function closePopup(){document.getElementById('popup').classList.remove('show');}
+function showPostalErr(msg){
+  const e=document.getElementById('postalErr');e.textContent=msg;e.style.display='block';
+}
+function applyAddress(pref,city,z,forceId){
+  const full=pref+city;
+  const found=forceId?AREAS.find(a=>a.id===forceId):findArea(full,z);
+  if(!found){openPopup(full);return;}   /* エリア外：電話案内のポップアップ */
+  area=found;addrPref=pref;addrCity=city;postalVal=z.slice(0,3)+'-'+z.slice(3);
+  const ok=document.getElementById('areaOk');
+  ok.innerHTML='ご住所：'+full+'<br>予約可能時間：<b>'+found.start+'〜'+found.end+'時</b>';
+  go();   /* 対応エリア：そのまま日時選択へ */
+}
+async function searchPostal(){
+  resetArea();
+  const z=toHalf(document.getElementById('postal').value).replace(/-/g,'');
+  if(!/^\d{7}$/.test(z)){showPostalErr('7桁の郵便番号を入力してください');return;}
+  try{
+    const res=await fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode='+z);
+    const data=await res.json();
+    if(!data.results){showPostalErr('該当する住所が見つかりませんでした');return;}
+    const r=data.results[0];
+    applyAddress(r.address1,r.address2+r.address3,z);
+  }catch(e){
+    showPostalErr('住所の検索に失敗しました。通信状況をご確認のうえ、もう一度お試しください。');
+  }
+}
+
+/* ---- STEP2：カレンダー ---- */
+function isClosed(dt){
+  if(!area)return true;
+  const t0=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const t1=new Date(t0);t1.setDate(t1.getDate()+2);  /* 当日・翌日・翌々日まで予約不可 */
+  const d0=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate());
+  if(d0<=t1)return true;
+  if(!area.days.includes(dt.getDay()))return true;
+  if(HOLIDAYS.has(dateKey(dt))||(busyData[dateKey(dt)]||[]).includes('holiday'))return true;
+  if(isDayFull(dt))return true;
+  return false;
+}
+function getSlots(){
+  const s=[];
+  for(let h=area.start;h<area.end;h++)s.push({label:h+'〜'+(h+1)+'時',start:h});
+  return s;
+}
+/* GASから、その月の「埋まっている時間帯」を取得する */
+async function fetchBusy(year,month){
+  if(GAS_URL.indexOf('ここに')>=0)return false;
+  try{
+    const res=await fetch(GAS_URL+'?action=availability&year='+year+'&month='+month);
+    const data=await res.json();
+    if(data.status==='ok'){
+      const prefix=year+'-'+String(month).padStart(2,'0')+'-';
+      Object.keys(busyData).forEach(k=>{if(k.indexOf(prefix)===0)delete busyData[k];});
+      Object.assign(busyData,data.busy);
+      return true;
+    }
+  }catch(e){console.warn('予約状況の取得に失敗:',e);}
+  return false;
+}
+function isSlotBusy(dt,slot){
+  return (busyData[dateKey(dt)]||[]).includes(slot.label);
+}
+function isDayFull(dt){return getSlots().every(sl=>isSlotBusy(dt,sl));}
+function renderTimeGrid(){
+  const g=document.getElementById('timeGrid');
+  if(!selDate){g.outerHTML='<div class="time-hint" id="timeGrid">先に日付を選択してください</div>';return;}
+  const html=getSlots().map((slot,i)=>{
+    const busy=isSlotBusy(selDate,slot);
+    return `<label class="to${busy?' busy':''}"><input type="radio" name="tm" value="${slot.label}"${busy?' disabled':''}><span class="tl">${slot.label}</span></label>`;
+  }).join('');
+  const el=document.getElementById('timeGrid');
+  el.className='time-grid';el.innerHTML=html;
+}
+function renderCal(){
+  document.getElementById('calTitle').textContent=cy+'年 '+(cm+1)+'月';
+  document.getElementById('calDH').innerHTML=DN.map((d,i)=>`<div class="cal-dh${i===0?' su':i===6?' sa':''}">${d}</div>`).join('');
+  const fd=new Date(cy,cm,1).getDay(),dim=new Date(cy,cm+1,0).getDate();
+  let h='';
+  for(let i=0;i<fd;i++)h+='<div class="cal-d emp"></div>';
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(cy,cm,d);
+    const closed=isClosed(dt);
+    let c='cal-d';
+    if(closed)c+=' closed';else if(dt.getDay()===6)c+=' sat';
+    if(dt.toDateString()===today.toDateString())c+=' tod';
+    if(selDate&&dt.toDateString()===selDate.toDateString())c+=' sel';
+    h+=`<div class="${c}" ${closed?'':`onclick="pick(${cy},${cm},${d})"`}>${d}</div>`;
+  }
+  document.getElementById('calG').innerHTML=h;
+}
+function pick(y,m,d){
+  const dt=new Date(y,m,d);if(isClosed(dt))return;
+  selDate=dt;
+  document.getElementById('selDisp').textContent='選択中：'+y+'年'+(m+1)+'月'+d+'日（'+DN[dt.getDay()]+'）';
+  renderCal();renderTimeGrid();
+}
+async function changeMonth(diff){
+  cm+=diff;
+  if(cm<0){cm=11;cy--;}
+  if(cm>11){cm=0;cy++;}
+  const ok=await fetchBusy(cy,cm+1);
+  document.getElementById('busyErr').style.display=ok?'none':'block';
+  renderCal();renderTimeGrid();
+}
+function prevM(){changeMonth(-1);}
+function nextM(){changeMonth(1);}
+
+/* ---- 画面の切り替え ---- */
+function updSteps(){
+  for(let i=1;i<=4;i++){
+    const n=document.getElementById('sn'+i);
+    if(i<cur){n.style.background='#3d1f2a';n.style.borderColor='#3d1f2a';n.style.color='#ffffff';}
+    else if(i===cur){n.style.background='#c9748a';n.style.borderColor='#c9748a';n.style.color='#ffffff';}
+    else{n.style.background='#fff5f7';n.style.borderColor='#f0bfca';n.style.color='#9a6a78';}
+  }
+  window.scrollTo(0,0);
+}
+function show(n){
+  document.getElementById('s'+cur).classList.remove('on');
+  cur=n;
+  document.getElementById('s'+cur).classList.add('on');
+  updSteps();
+}
+let lastAreaId=null,lastPostalVal=null;
+async function go(){
+  if(cur===1){
+    if(!area){showPostalErr('郵便番号を入力して「地域を確認」を押してください');return;}
+    if(lastAreaId!==area.id){selDate=null;lastAreaId=area.id;
+      document.getElementById('selDisp').textContent='日付を選択してください';}
+    if(lastPostalVal!==postalVal){document.getElementById('banchi').value='';lastPostalVal=postalVal;}
+    const t=new Date();cy=t.getFullYear();cm=t.getMonth();
+    document.getElementById('postalShow').textContent='郵便番号：〒'+postalVal;
+    const p=document.getElementById('pref'),c=document.getElementById('city');
+    if(!p.value||p.dataset.auto==='1'){p.value=addrPref;p.dataset.auto='1';}
+    if(!c.value||c.dataset.auto==='1'){c.value=addrCity;c.dataset.auto='1';}
+    const ok=await fetchBusy(cy,cm+1);
+    document.getElementById('busyErr').style.display=ok?'none':'block';
+    renderCal();renderTimeGrid();
+    show(2);return;
+  }
+  if(cur===2){
+    if(!selDate){alert('訪問希望日を選択してください');return;}
+    if(!document.querySelector('input[name="tm"]:checked')){document.getElementById('timeErr').style.display='block';return;}
+    document.getElementById('timeErr').style.display='none';
+    show(3);return;
+  }
+  if(cur===3){
+    let ok=true;
+    const svc=document.querySelectorAll('input[name="svc"]:checked');
+    document.getElementById('svcErr').style.display=svc.length?'none':'block';if(!svc.length)ok=false;
+    const f=document.getElementById('furigana').value.trim();
+    const n=document.getElementById('name').value.trim();
+    const ph=document.getElementById('phone').value.trim();
+    const pref=document.getElementById('pref').value.trim();
+    const city=document.getElementById('city').value.trim();
+    document.getElementById('furiganaErr').style.display=f?'none':'block';if(!f)ok=false;
+    document.getElementById('nameErr').style.display=n?'none':'block';if(!n)ok=false;
+    document.getElementById('phoneErr').style.display=ph?'none':'block';if(!ph)ok=false;
+    const addrErrEl=document.getElementById('addrErr');
+    addrErrEl.textContent='住所を入力してください';
+    addrErrEl.style.display=(!pref||!city)?'block':'none';if(!pref||!city)ok=false;
+    if(pref&&city&&!area.keys.some(k=>(pref+city).includes(k))){
+      addrErrEl.textContent='予約フォームからご予約いただけるのは'+areaKeyList().join('・')+'のお客様のみです。それ以外の地域はお電話にてご相談ください。';
+      addrErrEl.style.display='block';ok=false;
+    }
+    const banchi=document.getElementById('banchi').value.trim();
+    const banchiOk=banchi&&/[0-9０-９一二三四五六七八九十]/.test(banchi);
+    document.getElementById('banchiErr').style.display=banchiOk?'none':'block';if(!banchiOk)ok=false;
+    if(!ok){
+      const first=document.querySelector('.err-msg[style*="block"]');
+      if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    const d=selDate,bldg=document.getElementById('bldg').value.trim();
+    document.getElementById('c_date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
+    document.getElementById('c_time').textContent=document.querySelector('input[name="tm"]:checked').value;
+    document.getElementById('c_svc').textContent=[...svc].map(e=>e.value).join('、');
+    document.getElementById('c_memo').textContent=document.getElementById('memo').value.trim()||'—';
+    document.getElementById('c_furigana').textContent=f;
+    document.getElementById('c_name').textContent=n;
+    document.getElementById('c_phone').textContent=ph;
+    document.getElementById('c_addr').textContent='〒'+postalVal+' '+pref+city+banchi+(bldg?' '+bldg:'');
+    document.getElementById('lineNote').style.display=lineUserId?'none':'block';
+    document.getElementById('submitErr').style.display='none';
+    show(4);return;
+  }
+}
+function back(){
+  if(cur<=1)return;
+  show(cur-1);
+  if(cur===1&&area){
+    document.getElementById('areaOk').style.display='block';
+    document.getElementById('btnToDate').style.display='flex';
+  }
+}
+['pref','city'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{e.target.dataset.auto='0';}));
+
+function showConflictAndGoBack(){
+  const overlay=document.getElementById('conflictOverlay');
+  const timerEl=document.getElementById('conflictTimer');
+  let count=5;
+  timerEl.textContent=count;
+  overlay.classList.add('show');
+  function tick(){
+    count--;timerEl.textContent=count;
+    if(count>0){setTimeout(tick,1000);}
+    else{
+      overlay.classList.remove('show');
+      show(2);
+      fetchBusy(cy,cm+1).then(()=>{renderCal();renderTimeGrid();});
+    }
+  }
+  setTimeout(tick,1000);
+}
+
+async function submitBooking(){
+  const btn=document.getElementById('btnSub');
+  const errEl=document.getElementById('submitErr');
+  errEl.style.display='none';
+  btn.textContent='送信中...';btn.style.opacity='.6';btn.disabled=true;
+  const resetBtn=()=>{btn.textContent='予約を送信する';btn.style.opacity='1';btn.disabled=false;};
+
+  const d=selDate;
+  const dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
+  const payload={
+    furigana:   document.getElementById('furigana').value.trim(),
+    name:       document.getElementById('name').value.trim(),
+    phone:      document.getElementById('phone').value.trim(),
+    address:    document.getElementById('c_addr').textContent,
+    services:   document.getElementById('c_svc').textContent,
+    memo:       document.getElementById('memo').value.trim(),
+    date:       dateStr,
+    time:       document.querySelector('input[name="tm"]:checked').value,
+    lineUserId: lineUserId||''
+  };
+
+  try{
+    if(GAS_URL.indexOf('ここに')>=0)throw new Error('GAS_URL が設定されていません');
+    const res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(data.status==='conflict'){resetBtn();showConflictAndGoBack();return;}
+    if(data.status!=='ok')throw new Error(data.message||'送信エラー');
+    document.getElementById('s4').classList.remove('on');
+    document.getElementById('sDone').classList.add('on');
+    document.getElementById('stepBar').style.display='none';
+    window.scrollTo(0,0);
+  }catch(err){
+    console.warn('送信エラー:',err);
+    resetBtn();
+    errEl.style.display='block';
+    errEl.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+/* LINEのユーザーIDを取得（LINEのトーク画面から開いたときに、予約完了のLINEメッセージが届きます） */
+async function initLiff(){
+  try{
+    if(LIFF_ID.indexOf('ここに')>=0)return;
+    await liff.init({liffId:LIFF_ID});
+    if(liff.isLoggedIn()){
+      const profile=await liff.getProfile();
+      lineUserId=profile.userId;
+    }
+  }catch(e){console.warn('LIFFの初期化に失敗:',e);}
+}
+
+initLiff();
+</script>
+</body>
+</html>
