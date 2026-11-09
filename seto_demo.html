@@ -106,7 +106,7 @@ body{background:#fff5f7;font-family:sans-serif;}
   <div class="popup-box">
     <div class="popup-icon">📞</div>
     <div class="popup-main">こちらの住所は<br>お電話での対応になります。</div>
-    <div class="popup-addr">ご入力の住所：<span id="popAddr"></span><br>予約フォームからのご予約は、瀬戸市・豊田市のお客様のみです。</div>
+    <div class="popup-addr">ご入力の住所：<span id="popAddr"></span><br>予約フォームからのご予約は、愛知県・岐阜県のお客様のみです。</div>
     <a class="popup-tel" href="tel:0000000000">📞 0000-00-0000</a>
     <div class="popup-sub">こちらからお電話ください。</div>
     <button class="popup-close" onclick="closePopup()">閉じる</button>
@@ -144,9 +144,9 @@ body{background:#fff5f7;font-family:sans-serif;}
         <div style="font-size:11px;color:#9a6a78;line-height:1.7;margin-bottom:8px;">住所を自動で調べられませんでした。お住まいの市を下から選んでください。</div>
         <div style="display:flex;gap:7px;">
           <select id="manualCity" class="inp" style="flex:1;font-size:13px;">
-            <option value="瀬戸市">瀬戸市</option>
-            <option value="豊田市">豊田市</option>
-            <option value="名古屋市">名古屋市（エリア外のテスト）</option>
+            <option value="aichi">愛知県（例：名古屋市）</option>
+            <option value="gifu">岐阜県（例：岐阜市）</option>
+            <option value="tokyo">東京都（エリア外のテスト）</option>
           </select>
           <button onclick="applyManual()" style="padding:9px 14px;background:#a05570;color:#ffffff;border:none;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap;font-weight:bold;font-family:sans-serif;">この市で確認</button>
         </div>
@@ -161,7 +161,7 @@ body{background:#fff5f7;font-family:sans-serif;}
     <div class="sec" id="s2">
       <div class="sec-title">訪問希望日時</div>
       <div class="sec-desc">ご都合のよい日程をお選びください</div>
-      <div class="note"><b id="areaLabel"></b> の予約状況です。グレーの日付・時間帯は予約不可です。</div>
+      <div class="note">グレーの日付・時間帯は予約不可です。</div>
       <div class="cal-wrap">
         <div class="cal-hdr">
           <button class="cal-nav" onclick="prevM()">‹</button>
@@ -224,10 +224,13 @@ body{background:#fff5f7;font-family:sans-serif;}
         <div style="font-size:12px;font-weight:bold;color:#3d1f2a;margin-bottom:8px;">訪問先住所 <span class="req">必須</span></div>
         <div style="font-size:11px;color:#9a6a78;margin-bottom:8px;" id="postalShow"></div>
         <input type="text" id="pref" class="inp" placeholder="都道府県" style="margin-bottom:7px;font-size:13px;">
-        <input type="text" id="city" class="inp" placeholder="市区町村・番地" style="margin-bottom:7px;font-size:13px;">
-        <input type="text" id="bldg" class="inp" placeholder="建物名・部屋番号（任意）" style="font-size:13px;">
+        <input type="text" id="city" class="inp" placeholder="市区町村・町名" style="margin-bottom:7px;font-size:13px;">
+        <div style="font-size:12px;font-weight:bold;color:#3d1f2a;margin:10px 0 5px;">番地 <span class="req">必須</span></div>
+        <input type="text" id="banchi" class="inp" placeholder="例）1-2-3　（町名のあとの番地）" style="font-size:13px;">
+        <div class="err-msg" id="banchiErr">番地を入力してください（例：1-2-3）</div>
+        <input type="text" id="bldg" class="inp" placeholder="建物名・部屋番号（任意）" style="margin-top:7px;font-size:13px;">
       </div>
-      <div class="err-msg" id="addrErr">住所（番地まで）を入力してください</div>
+      <div class="err-msg" id="addrErr">住所を入力してください</div>
       <div class="btn-grp">
         <button onclick="back()" class="btn-back">← 戻る</button>
         <button onclick="go()" class="btn-next">内容確認へ　→</button>
@@ -240,7 +243,6 @@ body{background:#fff5f7;font-family:sans-serif;}
       <div class="sec-desc">以下の内容でよろしければ送信してください</div>
       <div class="conf-box">
         <div class="conf-ttl">── 訪問希望日時 ──</div>
-        <div class="conf-row"><div class="conf-k">地域</div><div class="conf-v" id="c_area">—</div></div>
         <div class="conf-row"><div class="conf-k">希望日</div><div class="conf-v" id="c_date">—</div></div>
         <div class="conf-row"><div class="conf-k">時間帯</div><div class="conf-v" id="c_time">—</div></div>
       </div>
@@ -286,17 +288,19 @@ body{background:#fff5f7;font-family:sans-serif;}
 </div>
 
 <script>
-/* ===== デモ用の設定（ここを書き換えると地域ごとの予約条件が変わります） =====
-   keys  : 住所にこの文字が含まれていたら、そのエリアと判定
+/* ===== 設定（ここを書き換えると予約できる地域・曜日・時間が変わります） =====
+   keys  : 住所にこの文字が含まれていたら、予約できる地域と判定（愛知県・岐阜県）
    days  : 予約できる曜日（0=日,1=月,2=火,3=水,4=木,5=金,6=土）
    start/end : 予約できる時間（start時〜end時）
-   ※ 対応エリアは瀬戸市（瀬戸店）・豊田市（浄水店）のみ。それ以外はお電話。
-   エリアごとに担当の営業さんが決まっていて、予約状況は担当者の予定に合わせます。
-   曜日・時間は仮の値です */
+   ※ 曜日・時間は仮の値です */
 const AREAS=[
-  {id:'seto',name:'瀬戸市（瀬戸店）',keys:['瀬戸市'],days:[1,2,3,4,5,6],start:9,end:19},
-  {id:'toyota',name:'豊田市（浄水店）',keys:['豊田市'],days:[1,2,3,4,5,6],start:9,end:19}
+  {id:'all',name:'愛知県・岐阜県',keys:['愛知県','岐阜県'],fallback:true,days:[1,2,3,4,5,6],start:9,end:19}
 ];
+function findArea(full,zip){
+  const cand=AREAS.filter(a=>a.keys.some(k=>full.includes(k)));
+  return cand.find(a=>a.fallback)||null;
+}
+function areaKeyList(){return AREAS[0].keys;}
 
 const DN=['日','月','火','水','木','金','土'];
 const HOLIDAYS=new Set([
@@ -326,19 +330,23 @@ function closePopup(){document.getElementById('popup').classList.remove('show');
 function showPostalErr(msg){
   const e=document.getElementById('postalErr');e.textContent=msg;e.style.display='block';
 }
-function applyAddress(pref,city,z){
+function applyAddress(pref,city,z,forceId){
   const full=pref+city;
-  const found=AREAS.find(a=>a.keys.some(k=>full.includes(k)));
+  const found=forceId?AREAS.find(a=>a.id===forceId):findArea(full,z);
   if(!found){openPopup(full);return;}   /* エリア外：電話案内のポップアップ */
   area=found;addrPref=pref;addrCity=city;postalVal=z.slice(0,3)+'-'+z.slice(3);
   const ok=document.getElementById('areaOk');
-  ok.innerHTML='ご住所：'+full+'<br>地域：<b>'+found.name+'</b><br>予約可能時間：<b>'+found.start+'〜'+found.end+'時</b>';
-  go();   /* 瀬戸市・豊田市：そのまま日時選択へ */
+  ok.innerHTML='ご住所：'+full+'<br>予約可能時間：<b>'+found.start+'〜'+found.end+'時</b>';
+  go();   /* 対応エリア：そのまま日時選択へ */
 }
 function applyManual(){
   resetArea();
-  const z=toHalf(document.getElementById('postal').value).replace(/-/g,'');
-  applyAddress('愛知県',document.getElementById('manualCity').value,/^\d{7}$/.test(z)?z:'0000000');
+  const v=document.getElementById('manualCity').value;
+  const z0=toHalf(document.getElementById('postal').value).replace(/-/g,'');
+  const z=/^\d{7}$/.test(z0)?z0:'0000000';
+  if(v==='aichi')applyAddress('愛知県','名古屋市中区',z);
+  else if(v==='gifu')applyAddress('岐阜県','岐阜市',z);
+  else applyAddress('東京都','千代田区',z);
 }
 async function searchPostal(){
   resetArea();
@@ -374,14 +382,9 @@ function getSlots(){
   for(let h=area.start;h<area.end;h++)s.push({label:h+'〜'+(h+1)+'時',start:h});
   return s;
 }
-/* デモ用の仮の「埋まっている枠」（エリアごとに担当者の予定が違うことを再現）
-   瀬戸市：日付が3の倍数の日は10時台と14時台が埋まっている
-   豊田市：日付が偶数の日は11時台と16時台、7の倍数の日は終日が埋まっている */
+/* デモ用の仮の「埋まっている枠」：日付が3の倍数の日は10時台と14時台が埋まっている */
 function isSlotBusy(dt,slot){
-  const d=dt.getDate();
-  if(area.id==='seto')return d%3===0&&(slot.start===10||slot.start===14);
-  if(area.id==='toyota')return d%7===0||(d%2===0&&(slot.start===11||slot.start===16));
-  return false;
+  return dt.getDate()%3===0&&(slot.start===10||slot.start===14);
 }
 function isDayFull(dt){return getSlots().every(sl=>isSlotBusy(dt,sl));}
 function renderTimeGrid(){
@@ -436,14 +439,14 @@ function show(n){
   document.getElementById('s'+cur).classList.add('on');
   updSteps();
 }
-let lastAreaId=null;
+let lastAreaId=null,lastPostalVal=null;
 function go(){
   if(cur===1){
     if(!area){showPostalErr('郵便番号を入力して「地域を確認」を押してください');return;}
     if(lastAreaId!==area.id){selDate=null;lastAreaId=area.id;
       document.getElementById('selDisp').textContent='日付を選択してください';}
+    if(lastPostalVal!==postalVal){document.getElementById('banchi').value='';lastPostalVal=postalVal;}
     const t=new Date();cy=t.getFullYear();cm=t.getMonth();
-    document.getElementById('areaLabel').textContent='【'+area.name+'】';
     document.getElementById('postalShow').textContent='郵便番号：〒'+postalVal;
     const p=document.getElementById('pref'),c=document.getElementById('city');
     if(!p.value||p.dataset.auto==='1'){p.value=addrPref;p.dataset.auto='1';}
@@ -470,19 +473,21 @@ function go(){
     document.getElementById('nameErr').style.display=n?'none':'block';if(!n)ok=false;
     document.getElementById('phoneErr').style.display=ph?'none':'block';if(!ph)ok=false;
     const addrErrEl=document.getElementById('addrErr');
-    addrErrEl.textContent='住所（番地まで）を入力してください';
+    addrErrEl.textContent='住所を入力してください';
     addrErrEl.style.display=(!pref||!city)?'block':'none';if(!pref||!city)ok=false;
     if(pref&&city&&!area.keys.some(k=>(pref+city).includes(k))){
-      addrErrEl.textContent='予約フォームからご予約いただけるのは'+AREAS.map(a=>a.keys[0]).join('・')+'のお客様のみです。それ以外の地域はお電話にてご相談ください。';
+      addrErrEl.textContent='予約フォームからご予約いただけるのは'+areaKeyList().join('・')+'のお客様のみです。それ以外の地域はお電話にてご相談ください。';
       addrErrEl.style.display='block';ok=false;
     }
+    const banchi=document.getElementById('banchi').value.trim();
+    const banchiOk=banchi&&/[0-9０-９一二三四五六七八九十]/.test(banchi);
+    document.getElementById('banchiErr').style.display=banchiOk?'none':'block';if(!banchiOk)ok=false;
     if(!ok){
       const first=document.querySelector('.err-msg[style*="block"]');
       if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
       return;
     }
     const d=selDate,bldg=document.getElementById('bldg').value.trim();
-    document.getElementById('c_area').textContent=area.name;
     document.getElementById('c_date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日（'+DN[d.getDay()]+'）';
     document.getElementById('c_time').textContent=document.querySelector('input[name="tm"]:checked').value;
     document.getElementById('c_svc').textContent=[...svc].map(e=>e.value).join('、');
@@ -490,7 +495,7 @@ function go(){
     document.getElementById('c_furigana').textContent=f;
     document.getElementById('c_name').textContent=n;
     document.getElementById('c_phone').textContent=ph;
-    document.getElementById('c_addr').textContent='〒'+postalVal+' '+pref+city+(bldg?' '+bldg:'');
+    document.getElementById('c_addr').textContent='〒'+postalVal+' '+pref+city+banchi+(bldg?' '+bldg:'');
     show(4);return;
   }
 }
