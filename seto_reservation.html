@@ -335,10 +335,6 @@ function findArea(full,zip){
 function areaKeyList(){return AREAS[0].keys;}
 
 const DN=['日','月','火','水','木','金','土'];
-const HOLIDAYS=new Set([
-  '2026-11-23','2026-12-23','2027-01-01','2027-01-11','2027-02-11','2027-02-23',
-  '2027-03-21','2027-04-29','2027-05-03','2027-05-04','2027-05-05'
-]);
 
 const today=new Date();
 let cy=today.getFullYear(),cm=today.getMonth(),selDate=null,cur=1;
@@ -394,7 +390,6 @@ function isClosed(dt){
   const d0=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate());
   if(d0<=t1)return true;
   if(!area.days.includes(dt.getDay()))return true;
-  if(HOLIDAYS.has(dateKey(dt))||(busyData[dateKey(dt)]||[]).includes('holiday'))return true;
   if(isDayFull(dt))return true;
   return false;
 }
